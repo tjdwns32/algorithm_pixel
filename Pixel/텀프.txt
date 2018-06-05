@@ -1,0 +1,8 @@
+잘못된 곳에 돌을 두면 패배
+PixelPlayer100.java만 건드리기, 5조면 PixelPlayer05.java로 설정
+nextPosition메소드만 수정해서 제출
+100은 그냥 랜덤한 위치에 놓은것
+
+101은 상대방의 돌 위치와 자신의 돌 위치를 고려해서 nextPosition설정
+currentPosition: 자신의 돌의 최근 위치
+lastPosition: 상대방 돌의 최근 위치
