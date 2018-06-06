@@ -1,0 +1,16 @@
+알고리즘 이후 도출된 값 (x,y) 이 유효할 조건
+
+0. 0 <= x,y <= 7 -> for 문 범위로 제어 가능
+1. x+y mod 7 == 0 && x*y mod 7 == 0 이면 안됨
+2. map[x][y] == 0
+3. 슬라이드 위치(상대방 마지막 위치)가  (a,b)이면
+      x == a || y == b 
+
+public boolean isValid(int a, int b){
+	if(((a+b)%7==0) && ((a*b)%7==0))
+		return false;
+	if(map[a][b] != 0)
+		return false;
+	if(a == x || b == y)
+		return true;
+}
