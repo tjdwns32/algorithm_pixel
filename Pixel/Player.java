@@ -4,7 +4,7 @@ import java.awt.Point;
 public abstract class Player {
 	public int[][] map;
 	public Point currentPosition;
-  
+	
   	protected Player() {
   	}
   
