@@ -16,6 +16,7 @@ public class PixelPlayer102 extends Player {
 		Point nextPosition;
 		
 		
+		
 		int w = 100;
 		int cnt = 0;
 		int bestX = 0; int bestY = 0;
