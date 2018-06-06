@@ -5,6 +5,14 @@ public class PixelPlayer102 extends Player {
 	PixelPlayer102(int[][] map) {
 		super(map);
 	}
+	public static void print(int[][] map){
+	  for(int i = 0;i<PixelTester.SIZE_OF_BOARD;i++){
+	    System.out.println();
+	    for(int j = 0;j<PixelTester.SIZE_OF_BOARD;j++){
+	      System.out.print(map[i][j]+"\t");
+	    }
+	  }
+	}
   //다소 공격적인 방법ㅏ
 	public Point nextPosition(Point lastPosition) {  
 		int x = (int)lastPosition.getX(), y = (int)lastPosition.getY();//상대방 돌의 마지막 위치
@@ -28,6 +36,8 @@ public class PixelPlayer102 extends Player {
     
     int [][] opMapX = new int[8][8]; //최적위치
     int [][] opMapY = new int[8][8];
+    int [][] opMaplD = new int[8][8];
+    int [][] opMaprD = new int[8][8];
     int [][] opMap = new int[8][8]; //최적위치
     
     int [][] omap = 
@@ -39,45 +49,73 @@ public class PixelPlayer102 extends Player {
            {0,0,0,0,0,0,1,0},
            {0,1,0,0,0,1,0,0},
            {1,0,0,0,1,0,0,0}};
+    print(verticalSearch(omap));
+		System.out.println();
+		//오른쪽 위에서 왼쪽아래로 대각선 탐색
+		print(horizonSearch(omap));
+		System.out.println();
+		print(lDiagonalSearch(omap));
+		System.out.println();
+		//오른쪽 위에서 왼쪽아래로 대각선 탐색
+		print(rDiagonalSearch(omap));
     
+    System.out.println("원본테이블");
     for(int i = 0; i < 8; i++){
       for(int j = 0; j < 8; j++){
-        opMapX[i][j] = 0;
-        opMapY[i][j] = 0;
-        opMap[i][j] = 0;
+        System.out.print(omap[i][j] + "\t ");
       }
+      System.out.println();
     }
-    
-    
-    for(int i = 0; i < 8; i++){
-      for(int j = 0; j < 8; j++){
-        if(omap[i][j] == 1){
-          cnt++;
-          
-          while(true){
-            if((j+cnt) < 8){
-              if(omap[i][j+cnt] == 1)
-                ++cnt;
-              else if(omap[i][j+cnt] == 0){ 
-                if(opMapX[j+cnt][i] >= 100) opMapX[i][j+cnt] = opMapX[i][j+cnt] + (cnt * w);
-                else opMapX[i][j+cnt] = (cnt * w);
-                break;
-              }
-              else break;
-            }else break;
-          }
-          
-          if(((j-1)!= -1)){
-             if ( (omap[i][j-1] == 0) )
-              opMapX[i][j-1] = opMapX[i][j-1] + (cnt * w);
-          }
-          if((j+cnt)<8) j+=cnt;
-          cnt = 0;
-       }
-      }
-    }
-    
-    for(int i = 0; i < 8; i++){
+		for( int n = 0; n < 8; n++ ){
+			for( int m = 0; m < 8; m++ ){
+				if( myNum == map[n][m] )//myNum: p100이면 1, p101이면 2{
+					for(int i = 0; i < PixelTester.SIZE_OF_BOARD; i++){
+					    if( (opMap[x][i] != -1) && (opMap[x][i] != 1) && (opMap[x][i] != 2) ){
+					      if(opMap[x][i] > maxX){
+					        maxX = opMap[x][i];
+					        bestX = i;   
+					      }      
+					    }
+					}
+					System.out.println(maxX);
+					System.out.println("opMap["+x+"]["+bestX+"] : "+ opMap[x][bestX]);
+					
+					for(int i = 0; i < PixelTester.SIZE_OF_BOARD; i++){
+					    if( (opMap[i][y] != -1) && (opMap[i][y] != 1) && (opMap[i][y] != 2) ){
+					      if(opMap[i][y] > maxY){
+					        maxY = opMap[i][y];
+					        bestY = i;   
+					      }      
+					    } 
+					}
+					
+					System.out.println(maxY);
+					System.out.println("opMap["+bestY+"]["+y+"] : "+ opMap[bestY][y]);
+					
+					if(maxX >= maxY){
+				    nextPosition = new Point(x,bestX);
+            System.out.println(nextPosition);
+            return nextPosition;
+					}else if(maxX < maxY){
+					  nextPosition = new Point(bestY,y);
+            System.out.println(nextPosition);
+            return nextPosition;
+					}
+				}
+			}
+		}
+
+		nextPosition = new Point(x, y);
+		return nextPosition;
+	}
+	public static int[][] verticalSearch(int[][] omap){
+	  int w = 100;
+		int cnt = 0;
+		int bestX = 0; int bestY = 0;
+		int maxX = 0; int maxY = 0;
+    System.out.println("세로테이블");
+	  int[][] opMapY = new int[PixelTester.SIZE_OF_BOARD][PixelTester.SIZE_OF_BOARD];
+	  for(int i = 0; i < 8; i++){
       for(int j = 0; j < 8; j++){
         if(omap[j][i] == 1){
           cnt++;
@@ -105,123 +143,166 @@ public class PixelPlayer102 extends Player {
        }
       }
     }
-    System.out.println("원본테이블");
-    for(int i = 0; i < 8; i++){
-      for(int j = 0; j < 8; j++){
-        System.out.print(omap[i][j] + "\t ");
-      }
-      System.out.println();
-    }
-    
-    System.out.println("가로테이블");
-    for(int i = 0; i < 8; i++){
-      for(int j = 0; j < 8; j++){
-        System.out.print(opMapX[i][j] + "\t ");
-      }
-      System.out.println();
-    }
-    
-    System.out.println("세로테이블");
-    for(int i = 0; i < 8; i++){
-      for(int j = 0; j < 8; j++){
-        System.out.print(opMapY[i][j] + "\t ");
-      }
-      System.out.println();
-    }
-        
-    
-//    for(int i = 0; i < 8; i++){
-//      for(int j = 0; j < 8; j++){
-//        if(opMap[i][j] != opMapX[i][j]){
-//          opMap[i][j] = opMapX[i][j];
-//        }else if(opMap[i][j] != opMapX[i][j]){
-//          opMap[i][j] = opMapX[i][j];
-//        }
-//      }
-//    }
-    
-    
-//    System.out.println("--Map[][]--");
-//    for(int i = 0; i < 8; i++){
-//      for(int j = 0; j < 8; j++){
-//        System.out.print(map[i][j] + "\t ");
-//      }
-//      System.out.println();
-//    }
-//    
-//    System.out.println("--opMap[][]--");
-//    for(int i = 0; i < 8; i++){
-//      for(int j = 0; j < 8; j++){
-//        System.out.print(opMap[i][j] + "\t ");
-//      }
-//      System.out.println();
-//    }
-//    
-   
-		for( int n = 0; n < 8; n++ )
-		{
-			for( int m = 0; m < 8; m++ )
-			{
-				if( myNum == map[n][m] )//myNum: p100이면 1, p101이면 2
-				{
-					for(int i = 0; i < PixelTester.SIZE_OF_BOARD; i++)
-					{
-					    if( (opMap[x][i] != -1) && (opMap[x][i] != 1) && (opMap[x][i] != 2) ){
-					      if(opMap[x][i] > maxX){
-					        maxX = opMap[x][i];
-					        bestX = i;   
-					      }      
-					    }
-//					    nextPosition = new Point(x, i);
-//							System.out.println(nextPosition);
-//		    			return nextPosition;
-//					  
-//						if(map[i][y] == 0 && ( i == n || y == m ))//대각선이동 방지하면서 x축이동
-//						{
-//							nextPosition = new Point(i, y);
-//							System.out.println(nextPosition);
-//							return nextPosition;
-//						}
-              
-					}
-					System.out.println(maxX);
-					System.out.println("opMap["+x+"]["+bestX+"] : "+ opMap[x][bestX]);
-					
-					for(int i = 0; i < PixelTester.SIZE_OF_BOARD; i++)
-					{
-					    if( (opMap[i][y] != -1) && (opMap[i][y] != 1) && (opMap[i][y] != 2) ){
-					      if(opMap[i][y] > maxY){
-					        maxY = opMap[i][y];
-					        bestY = i;   
-					      }      
-					    }
-					  
-//            if( (map[i][y] == 0) && (opMap[i][y] == 100)){
-//					      nextPosition = new Point(i, y);
-//							  System.out.println(nextPosition);
-//							  return nextPosition;
-//					  }						  
-					}
-					
-					System.out.println(maxY);
-					System.out.println("opMap["+bestY+"]["+y+"] : "+ opMap[bestY][y]);
-					
-					if(maxX >= maxY){
-				    nextPosition = new Point(x,bestX);
-            System.out.println(nextPosition);
-            return nextPosition;
-					}else if(maxX < maxY){
-					  nextPosition = new Point(bestY,y);
-            System.out.println(nextPosition);
-            return nextPosition;
-					}
-				}
-			}
-		}
-
-		nextPosition = new Point(x, y);
-		return nextPosition;
+    return opMapY;
 	}
+	public static int[][] horizonSearch(int[][] omap){
+	  int w = 100;
+		int cnt = 0;
+		int bestX = 0; int bestY = 0;
+		int maxX = 0; int maxY = 0;
+	  System.out.println("가로테이블");
+	  int[][] opMapX = new int[PixelTester.SIZE_OF_BOARD][PixelTester.SIZE_OF_BOARD];
+	  for(int i = 0; i < 8; i++){
+      for(int j = 0; j < 8; j++){
+        if(omap[i][j] == 1){
+          cnt++;
+          
+          while(true){
+            if((j+cnt) < 8){
+              if(omap[i][j+cnt] == 1)
+                ++cnt;
+              else if(omap[i][j+cnt] == 0){ 
+                if(opMapX[j+cnt][i] >= 100) opMapX[i][j+cnt] = opMapX[i][j+cnt] + (cnt * w);
+                else opMapX[i][j+cnt] = (cnt * w);
+                break;
+              }
+              else break;
+            }else break;
+          }
+          
+          if(((j-1)!= -1)){
+             if ( (omap[i][j-1] == 0) )
+              opMapX[i][j-1] = opMapX[i][j-1] + (cnt * w);
+          }
+          if((j+cnt)<8) j+=cnt;
+          cnt = 0;
+       }
+      }
+    }
+    return opMapX;
+	}
+	public static int[][] lDiagonalSearch(int[][] omap){
+		  System.out.println("왼쪽 위에서 오른쪽 아래로");
+		  int cnt = 0;
+      int weight = 0;
+      int temp = 0;
+      //왼쪽 위에서 오른쪽 아래로 대각선 탐색
+		  int[][] cmap = new int[PixelTester.SIZE_OF_BOARD][PixelTester.SIZE_OF_BOARD];
+		  for(int i = PixelTester.SIZE_OF_BOARD-1;i>=0;i--) {
+		  //System.out.println("diag: "+i);
+		  cnt =0;
+		  temp = i;
+			for(int j =0;temp<PixelTester.SIZE_OF_BOARD;temp++,j++){
+			  if(omap[temp][j] == 1){//내돌이 있으면 가중치
+			     cnt += 1;
+			     //System.out.println("가중치: ["+temp+"]["+j+"]");
+			  }
+			  else if(omap[temp][j] == 0 && cnt != 0){//돌의 연결이 끝나면 가중치부여
+			     //System.out.println("최종 가중치 :["+temp+"]["+j+"]");
+			     weight = 100*cnt;
+			     cmap[temp][j] = weight;
+			     if(temp-(cnt+1) >= 0 && j-(cnt+1) >= 0)
+			      cmap[temp-(cnt+1)][j-(cnt+1)] = weight; 
+			     cnt=0;
+			  }
+			  if(temp == PixelTester.SIZE_OF_BOARD-1 && cnt != 0){//가중치 부여하기전에 연결이 끝날때
+			     //System.out.println("예외상황 가중치: ["+temp+"]["+j+"]");
+			     weight = 100*cnt;
+			     if(temp-cnt >= 0 && j-cnt >= 0)
+			      cmap[temp-cnt][j-cnt] = weight; 
+			     cnt =0;
+			  }	  
+			}
+	  }
+    for(int j=0;j<PixelTester.SIZE_OF_BOARD;j++){
+		  //System.out.println("diag: "+j);
+		  cnt =0;
+		  temp = j;
+			for(int i =0;temp<PixelTester.SIZE_OF_BOARD;temp++,i++){
+			  if(omap[i][temp] == 1){//내돌이 있으면 가중치
+			     cnt += 1;
+			     //System.out.println("가중치: ["+i+"]["+temp+"]");
+			  }
+			  else if(omap[i][temp] == 0 && cnt != 0){//돌의 연결이 끝나면 가중치부여
+			     //System.out.println("최종 가중치 :["+i+"]["+temp+"]");
+			     weight = 100*cnt;
+			     cmap[i][temp] = weight;
+			     if(i-(cnt+1) >= 0 && temp-(cnt+1) >= 0)
+			      cmap[i-(cnt+1)][temp-(cnt+1)] = weight; 
+			     cnt=0;
+			  }
+			  if(temp == PixelTester.SIZE_OF_BOARD-1 && cnt != 0){//가중치 부여하기전에 연결이 끝날때
+			     //System.out.println("예외상황 가중치: ["+i+"]["+temp+"]");
+			     weight = 100*cnt;
+			     if(temp-cnt >= 0 && i-cnt >= 0)
+			      cmap[i-cnt][temp-cnt] = weight; 
+			     cnt = 0;
+			  }	  
+			}
+	  }
+	  return cmap;  
+		}
+		public static int[][] rDiagonalSearch(int[][] omap){
+		  System.out.println("오른쪽 위에서 왼쪽 아래로");
+		  int cnt = 0;
+      int weight = 0;
+      int temp = 0;
+		  int[][] cmap = new int[PixelTester.SIZE_OF_BOARD][PixelTester.SIZE_OF_BOARD];
+		  //오른쪽 위에서 왼쪽아래로 대각선 탐색
+		  for(int i = PixelTester.SIZE_OF_BOARD-1;i>=0;i--) {
+		    //System.out.println("diag: "+i);
+		    cnt =0;
+		    temp = i;
+			  for(int j =PixelTester.SIZE_OF_BOARD-1;temp<PixelTester.SIZE_OF_BOARD;temp++,j--){
+			    if(omap[temp][j] == 1){//내돌이 있으면 가중치
+			      cnt += 1;
+			      //System.out.println("가중치 시작점: ["+temp+"]["+j+"]");
+			    }
+			    else if(omap[temp][j] == 0 && cnt != 0){//돌의 연결이 끝나면 가중치부여
+			      //System.out.println("최종 가중치 :["+temp+"]["+j+"]");
+			      weight = 100*cnt;
+			      cmap[temp][j] += weight;
+			      if(temp-(cnt+1) >= 0 && j+(cnt+1)<PixelTester.SIZE_OF_BOARD)
+			      cmap[temp-(cnt+1)][j+(cnt+1)] += weight; 
+			      cnt=0;
+			    }
+			  if(temp == PixelTester.SIZE_OF_BOARD-1 && cnt != 0){//가중치 부여하기전에 연결이 끝날때
+			    //System.out.println("예외상황 가중치: ["+temp+"]["+j+"]");
+			    weight = 100*cnt;
+			    if(temp-cnt >= 0 && j+cnt<PixelTester.SIZE_OF_BOARD)
+			    cmap[temp-cnt][j+cnt] += weight; 
+			    cnt =0;
+			  }	  
+			}
+	  }
+    for(int j= 0;j<PixelTester.SIZE_OF_BOARD;j++) {
+		  //System.out.println("diag: "+j);
+		  cnt =0;
+		  temp = j;
+			for(int i =0;temp>=0;temp--,i++){
+			  if(omap[i][temp] == 1){//내돌이 있으면 가중치
+			     cnt += 1;
+			     //System.out.println("가중치: ["+i+"]["+temp+"]");
+			  }
+			  else if(omap[i][temp] == 0 && cnt != 0){//돌의 연결이 끝나면 가중치부여
+			     //System.out.println("최종 가중치 :["+i+"]["+temp+"]");
+			     weight = 100*cnt;
+			     cmap[i][temp] += weight;
+			     if(i-(cnt+1) >= 0 && temp+(cnt+1)<PixelTester.SIZE_OF_BOARD)
+			      cmap[i-(cnt+1)][temp+(cnt+1)] += weight; 
+			     cnt=0;
+			  }
+			  if(temp == PixelTester.SIZE_OF_BOARD-1 && cnt != 0){//가중치 부여하기전에 연결이 끝날때
+			     //System.out.println("예외상황 가중치: ["+i+"]["+temp+"]");
+			     weight = 100*cnt;
+			     if(i-cnt >= 0 && temp+cnt<PixelTester.SIZE_OF_BOARD)
+			      cmap[i-cnt][temp+cnt] += weight; 
+			     cnt = 0;
+			  }	  
+			}
+	  }
+	  return cmap;
+		}
 	
 	
 }
