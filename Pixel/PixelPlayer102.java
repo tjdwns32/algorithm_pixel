@@ -40,24 +40,14 @@ public class PixelPlayer102 extends Player {
     int [][] opMaprD = new int[8][8];
     int [][] opMap = new int[8][8]; //최적위치
     
-    int [][] omap = 
-          {{1,0,0,0,0,0,1,0},
-           {0,0,1,0,0,0,0,1},
-           {0,0,1,1,1,0,0,0},
-           {0,1,0,0,0,1,0,0},
-           {0,0,1,0,0,0,0,0},
-           {0,0,0,0,0,0,1,0},
-           {0,1,0,0,0,1,0,0},
-           {1,0,0,0,1,0,0,0}};
-    print(verticalSearch(omap));
-		System.out.println();
-		//오른쪽 위에서 왼쪽아래로 대각선 탐색
-		print(horizonSearch(omap));
-		System.out.println();
-		print(lDiagonalSearch(omap));
-		System.out.println();
-		//오른쪽 위에서 왼쪽아래로 대각선 탐색
-		print(rDiagonalSearch(omap));
+    opMapX = horizonSearch(map);
+    opMapY = verticalSearch(map);
+    opMaplD = lDiagonalSearch(map);
+    opMaprD = rDiagonalSearch(map);
+    
+    for(int i = 0;i<PixelTester.SIZE_OF_BOARD;i++){
+      for(int j = 0;j<PixelTester.SIZE_OF_BOARD;j++){
+        opMap
     
     System.out.println("원본테이블");
     for(int i = 0; i < 8; i++){
