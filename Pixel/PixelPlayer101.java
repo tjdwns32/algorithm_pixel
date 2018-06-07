@@ -273,15 +273,15 @@ public class PixelPlayer101 extends Player {
 			      //System.out.println("최종 가중치 :["+temp+"]["+j+"]");
 			      weight = 100*cnt;
 			      cmap[temp][j] += weight;
-			      if(temp-(cnt+1) >= 0 && j+(cnt+1)<PixelTester.SIZE_OF_BOARD)
-			      cmap[temp-(cnt+1)][j+(cnt+1)] += weight; 
+			      if(temp-(cnt+1) >= 0 && j+(cnt+1)<PixelTester.SIZE_OF_BOARD && omap[temp-(cnt+1)][j+(cnt+1)]!=2)
+			       cmap[temp-(cnt+1)][j+(cnt+1)] += weight; 
 			      cnt=0;
 			    }
 			  if(temp == PixelTester.SIZE_OF_BOARD-1 && cnt != 0){ //N가중치 부여하기전에 연결이 끝날때
 			    //System.out.println("예외상황 가중치: ["+temp+"]["+j+"]");
 			    weight = 100*cnt;
-			    if(temp-cnt >= 0 && j+cnt<PixelTester.SIZE_OF_BOARD)
-			    cmap[temp-cnt][j+cnt] += weight; 
+			    if(temp-cnt >= 0 && j+cnt<PixelTester.SIZE_OF_BOARD && omap[temp-cnt][j+cnt]!=2)
+			     cmap[temp-cnt][j+cnt] += weight; 
 			    cnt =0;
 			  }	  
 			}
@@ -299,14 +299,14 @@ public class PixelPlayer101 extends Player {
 			     //System.out.println("최종 가중치 :["+i+"]["+temp+"]");
 			     weight = 100*cnt;
 			     cmap[i][temp] += weight;
-			     if(i-(cnt+1) >= 0 && temp+(cnt+1)<PixelTester.SIZE_OF_BOARD && cmap[i-(cnt+1)][temp+(cnt+1)]!=2)
+			     if(i-(cnt+1) >= 0 && temp+(cnt+1)<PixelTester.SIZE_OF_BOARD && omap[i-(cnt+1)][temp+(cnt+1)]!=2)
 			      cmap[i-(cnt+1)][temp+(cnt+1)] += weight; 
 			     cnt=0;
 			  }
 			  if(temp == PixelTester.SIZE_OF_BOARD-1 && cnt != 0){//가중치 부여하기전에 연결이 끝날때
 			     //System.out.println("예외상황 가중치: ["+i+"]["+temp+"]");
 			     weight = 100*cnt;
-			     if(i-cnt >= 0 && temp+cnt<PixelTester.SIZE_OF_BOARD && cmap[i-cnt][temp+cnt]!=2)
+			     if(i-cnt >= 0 && temp+cnt<PixelTester.SIZE_OF_BOARD && omap[i-cnt][temp+cnt]!=2)
 			      cmap[i-cnt][temp+cnt] += weight; 
 			     cnt = 0;
 			  }	  
