@@ -115,8 +115,6 @@ public class PixelTester{
 		dolPosition = new Point(4, 3);
 		lastPosition = new Point(4, 3);
 
-
-
 		map[4][3] = 1;
 		map[3][4] = 2;
 		board.repaint();
@@ -132,7 +130,6 @@ public class PixelTester{
 				// Player1
 				if( turn == 1)
 				{
-
 					startTime = System.nanoTime();
 					dolPosition = p1.nextPosition(dolPosition);
 					endTime = System.nanoTime();
@@ -175,16 +172,11 @@ public class PixelTester{
 						printMap();
 						break;
 					}
-
 					if ( isdraw(dolPosition) ) {
 						System.out.println("A drawn State!");
 						break;
 					}
-
-
 				}
-
-
 				// Player2
 				while(start){
 					Thread.sleep(100);
@@ -240,14 +232,12 @@ public class PixelTester{
 						System.out.println("A drawn State!");
 						break;
 					}
-
 				}
 			}
 			if ( isdraw(dolPosition) )
 			{
 				winner = 3;
 			}
-
 			board.isend(winner);
 			board.repaint();
 		}
