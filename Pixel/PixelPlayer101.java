@@ -222,8 +222,14 @@ public class PixelPlayer101 extends Player {
           
           while(true){ //붙어있는 돌을 확인
             if((j+cnt) < 8){ //맵의 크기를 벗어나지 않는 선에서
+<<<<<<< HEAD
+              if(omap[i][j+cnt] == 1){ //붙어있는 돌이 존재하면 카운트하
+                System.out.println("["+i+"]["+(j+cnt)+"]"); 
+=======
               if(omap[i][j+cnt] == 1) //붙어있는 돌이 존재하면 카운트하고
+>>>>>>> c301d32bb50aec6454b7020576dac4758090e77b
                 ++cnt;
+              }
               else if(omap[i][j+cnt] == 0){ //돌을 둘수있는 위치이면 가로가중치 맵을 검사
                 opMapX[i][j+cnt] = opMapX[i][j+cnt] + (cnt * w);
                 break;
@@ -257,6 +263,7 @@ public class PixelPlayer101 extends Player {
       int weight = 0;
       int temp = 0;
       //왼쪽 위에서 오른쪽 아래로 대각선 탐색
+<<<<<<< HEAD
         int[][] cmap = new int[PixelTester.SIZE_OF_BOARD][PixelTester.SIZE_OF_BOARD];
         for(int i = PixelTester.SIZE_OF_BOARD-2;i>=0;i--) {
         //System.out.println("diag: "+i);
@@ -314,6 +321,65 @@ public class PixelPlayer101 extends Player {
      }
      return cmap;  
     }
+=======
+		  int[][] cmap = new int[PixelTester.SIZE_OF_BOARD][PixelTester.SIZE_OF_BOARD];
+		  for(int i = PixelTester.SIZE_OF_BOARD-1;i>=0;i--) {
+		  //System.out.println("diag: "+i);
+		  cnt =0;
+		  temp = i;
+			for(int j =0;temp<PixelTester.SIZE_OF_BOARD;temp++,j++){
+			  if(omap[temp][j] == 1){//내돌이 있으면 가중치
+			     cnt += 1;
+			     //System.out.println("가중치: ["+temp+"]["+j+"]");
+			  }
+			  else if(omap[temp][j] == 2) cnt = 0;
+			  else if(omap[temp][j] == 0 && cnt != 0){//돌의 연결이 끝나면 가중치부여
+			     //System.out.println("최종 가중치 :["+temp+"]["+j+"]");
+			     weight = 100*cnt;
+			     cmap[temp][j] = weight;
+			     if(temp-(cnt+1) >= 0 && j-(cnt+1) >= 0 && omap[temp-(cnt+1)][j-(cnt+1)]==0)
+			      cmap[temp-(cnt+1)][j-(cnt+1)] += weight; 
+			     cnt=0;
+			  }
+			  if(temp == PixelTester.SIZE_OF_BOARD-1 && cnt != 0){//가중치 부여하기전에 연결이 끝날때
+			     //System.out.println("예외상황 가중치: ["+temp+"]["+j+"]");
+			     weight = 100*cnt;
+			     if(temp-cnt >= 0 && j-cnt >= 0 && omap[temp-cnt][j-cnt]==0)
+			      cmap[temp-cnt][j-cnt] += weight; 
+			     cnt =0;
+			  }	  
+			}
+	  }
+    for(int j=0;j<PixelTester.SIZE_OF_BOARD;j++){
+		  //System.out.println("diag: "+j);
+		  cnt =0;
+		  temp = j;
+			for(int i =0;temp<PixelTester.SIZE_OF_BOARD;temp++,i++){
+			  if(omap[i][temp] == 1){//내돌이 있으면 가중치
+			     cnt += 1;
+			     //System.out.println("가중치: ["+i+"]["+temp+"]");
+			  }
+			  else if(omap[i][temp] == 2) cnt =0;
+			  else if(omap[i][temp] == 0 && cnt != 0){//돌의 연결이 끝나면 가중치부여
+			     //System.out.println("최종 가중치 :["+i+"]["+temp+"]");
+			     weight = 100*cnt;
+			     cmap[i][temp] = weight;
+			     if(i-(cnt+1) >= 0 && temp-(cnt+1) >= 0 && omap[i-(cnt+1)][temp-(cnt+1)]==0)
+			      cmap[i-(cnt+1)][temp-(cnt+1)] = weight; 
+			     cnt=0;
+			  }
+			  if(temp == PixelTester.SIZE_OF_BOARD-1 && cnt != 0){//가중치 부여하기전에 연결이 끝날때
+			     //System.out.println("예외상황 가중치: ["+i+"]["+temp+"]");
+			     weight = 100*cnt;
+			     if(temp-cnt >= 0 && i-cnt >= 0 && omap[i-cnt][temp-cnt]==0)
+			      cmap[i-cnt][temp-cnt] = weight; 
+			     cnt = 0;
+			  }	  
+			}
+	  }
+	  return cmap;  
+		}
+>>>>>>> a807ff7d7941f99449e2199f946a8b116a90f1ff
 		
 		//대각선가중치 - 오른쪽 위에서 왼쪽 아래로
 		public static int[][] rDiagonalSearch(int[][] omap){
@@ -321,6 +387,7 @@ public class PixelPlayer101 extends Player {
         int cnt = 0;
       int weight = 0;
       int temp = 0;
+<<<<<<< HEAD
         int[][] cmap = new int[PixelTester.SIZE_OF_BOARD][PixelTester.SIZE_OF_BOARD];
         //오른쪽 위에서 왼쪽아래로 대각선 탐색
         for(int i = PixelTester.SIZE_OF_BOARD-2;i>=0;i--) {
@@ -379,4 +446,64 @@ public class PixelPlayer101 extends Player {
      }
      return cmap;
       }
+=======
+		  int[][] cmap = new int[PixelTester.SIZE_OF_BOARD][PixelTester.SIZE_OF_BOARD];
+		  //오른쪽 위에서 왼쪽아래로 대각선 탐색
+		  for(int i = PixelTester.SIZE_OF_BOARD-1;i>=0;i--) {
+		    //System.out.println("diag: "+i);
+		    cnt =0;
+		    temp = i;
+			  for(int j =PixelTester.SIZE_OF_BOARD-1;temp<PixelTester.SIZE_OF_BOARD;temp++,j--){
+			    if(omap[temp][j] == 1){//내돌이 있으면 가중치
+			      cnt += 1;
+			      //System.out.println("가중치 시작점: ["+temp+"]["+j+"]");
+			    }
+			    else if(omap[temp][j] == 2) cnt =0;
+			    else if(omap[temp][j] == 0 && cnt != 0){//돌의 연결이 끝나면 가중치부여
+			      //System.out.println("최종 가중치 :["+temp+"]["+j+"]");
+			      weight = 100*cnt;
+			      cmap[temp][j] += weight;
+			      if(temp-(cnt+1) >= 0 && j+(cnt+1)<PixelTester.SIZE_OF_BOARD && omap[temp-(cnt+1)][j+(cnt+1)]==0)
+			       cmap[temp-(cnt+1)][j+(cnt+1)] += weight; 
+			      cnt=0;
+			    }
+			  if(temp == PixelTester.SIZE_OF_BOARD-1 && cnt != 0){ //N가중치 부여하기전에 연결이 끝날때
+			    //System.out.println("예외상황 가중치: ["+temp+"]["+j+"]");
+			    weight = 100*cnt;
+			    if(temp-cnt >= 0 && j+cnt<PixelTester.SIZE_OF_BOARD && omap[temp-cnt][j+cnt]==0)
+			     cmap[temp-cnt][j+cnt] += weight; 
+			    cnt =0;
+			  }	  
+			}
+	  }
+    for(int j= 0;j<PixelTester.SIZE_OF_BOARD-1;j++) {
+		  //System.out.println("diag: "+j);
+		  cnt =0;
+		  temp = j;
+			for(int i =0;temp>=0;temp--,i++){
+			  if(omap[i][temp] == 1){//내돌이 있으면 가중치
+			     cnt += 1;
+			     //System.out.println("가중치: ["+i+"]["+temp+"]");
+			  }
+			  else if(omap[i][temp] ==2) cnt = 0;
+			  else if(omap[i][temp] == 0 && cnt != 0){//돌의 연결이 끝나면 가중치부여
+			     //System.out.println("최종 가중치 :["+i+"]["+temp+"]");
+			     weight = 100*cnt;
+			     cmap[i][temp] += weight;
+			     if(i-(cnt+1) >= 0 && temp+(cnt+1)<PixelTester.SIZE_OF_BOARD && omap[i-(cnt+1)][temp+(cnt+1)]==0)
+			      cmap[i-(cnt+1)][temp+(cnt+1)] += weight; 
+			     cnt=0;
+			  }
+			  if(temp == PixelTester.SIZE_OF_BOARD-1 && cnt != 0){//가중치 부여하기전에 연결이 끝날때
+			     //System.out.println("예외상황 가중치: ["+i+"]["+temp+"]");
+			     weight = 100*cnt;
+			     if(i-cnt >= 0 && temp+cnt<PixelTester.SIZE_OF_BOARD && omap[i-cnt][temp+cnt]==0)
+			      cmap[i-cnt][temp+cnt] += weight; 
+			     cnt = 0;
+			  }	  
+			}
+	  }
+	  return cmap;
+		}
+>>>>>>> a807ff7d7941f99449e2199f946a8b116a90f1ff
 }
