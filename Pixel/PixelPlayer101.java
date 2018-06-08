@@ -208,6 +208,7 @@ public class PixelPlayer101 extends Player {
 			     cnt += 1;
 			     //System.out.println("가중치: ["+temp+"]["+j+"]");
 			  }
+			  else if(omap[temp][j] == 2) cnt = 0;
 			  else if(omap[temp][j] == 0 && cnt != 0){//돌의 연결이 끝나면 가중치부여
 			     //System.out.println("최종 가중치 :["+temp+"]["+j+"]");
 			     weight = 100*cnt;
@@ -234,6 +235,7 @@ public class PixelPlayer101 extends Player {
 			     cnt += 1;
 			     //System.out.println("가중치: ["+i+"]["+temp+"]");
 			  }
+			  else if(omap[i][temp] == 2) cnt =0;
 			  else if(omap[i][temp] == 0 && cnt != 0){//돌의 연결이 끝나면 가중치부여
 			     //System.out.println("최종 가중치 :["+i+"]["+temp+"]");
 			     weight = 100*cnt;
@@ -271,6 +273,7 @@ public class PixelPlayer101 extends Player {
 			      cnt += 1;
 			      //System.out.println("가중치 시작점: ["+temp+"]["+j+"]");
 			    }
+			    else if(omap[temp][j] == 2) cnt =0;
 			    else if(omap[temp][j] == 0 && cnt != 0){//돌의 연결이 끝나면 가중치부여
 			      //System.out.println("최종 가중치 :["+temp+"]["+j+"]");
 			      weight = 100*cnt;
@@ -297,6 +300,7 @@ public class PixelPlayer101 extends Player {
 			     cnt += 1;
 			     //System.out.println("가중치: ["+i+"]["+temp+"]");
 			  }
+			  else if(omap[i][temp] ==2) cnt = 0;
 			  else if(omap[i][temp] == 0 && cnt != 0){//돌의 연결이 끝나면 가중치부여
 			     //System.out.println("최종 가중치 :["+i+"]["+temp+"]");
 			     weight = 100*cnt;
