@@ -95,6 +95,13 @@ public class PixelPlayer101 extends Player {
 	public static int[][] merge(int hMap[][], int vMap[][], int lDMap[][], int rDMap[][]){
 	  int[][] opMap = new int[8][8];
 	  
+	  for(int i = 0; i < 8; i++){
+      for(int j = 0; j < 8; j++){
+        
+        
+      }
+    }
+	  
 	  return opMap;
 	}
 	
@@ -114,10 +121,7 @@ public class PixelPlayer101 extends Player {
               if(omap[j+cnt][i] == 1) //붙어있는 돌이 존재하면 카운트하고
                 ++cnt;
               else if(omap[j+cnt][i] == 0){ //돌을 둘수있는 위치이면 세로가중치 맵을 검사
-                if(opMapY[j+cnt][i] >= 100)  //가중치가 이미 존재하면 가중치를 더해주고
-                  opMapY[j+cnt][i] = opMapY[j+cnt][i] + (cnt * w);
-                else  //가중치가 없으면 가중치를 넣어줌
-                  opMapY[j+cnt][i] = cnt * w;
+                opMapY[j+cnt][i] = opMapY[j+cnt][i] + (cnt * w);
                 break;
               }
               else break; //돌을 둘 수 있는 자리가 아닌경우 종료
@@ -126,11 +130,8 @@ public class PixelPlayer101 extends Player {
           
           // 현재돌의 전 위치를 검사해서
           if(((j-1)!= -1)){ //맵의 크기를 벗어나지 않고
-             if ( (omap[j-1][i] == 0) ){ //돌을 둘 수 있는 위치이면
-              if(opMapX[j-1][i] >= 100) //세로 가중치 맵 검사
-                opMapX[j-1][i] = opMapX[j-1][i] + (cnt * w); 
-              else
-                opMapX[j-1][i] = (cnt * w); 
+             if ((omap[j-1][i] == 0) ){ //돌을 둘 수 있는 위치이면
+              opMapY[j-1][i] = opMapY[j-1][i] + (cnt * w);  
             }
           }
           
@@ -156,26 +157,20 @@ public class PixelPlayer101 extends Player {
           
           while(true){ //붙어있는 돌을 확인
             if((j+cnt) < 8){ //맵의 크기를 벗어나지 않는 선에서
-              if(omap[i][j+cnt] == 1)  //붙어있는 돌이 존재하면 카운트하고
+              if(omap[i][j+cnt] == 1) //붙어있는 돌이 존재하면 카운트하고
                 ++cnt;
               else if(omap[i][j+cnt] == 0){ //돌을 둘수있는 위치이면 가로가중치 맵을 검사
-                
-                if(opMapX[i][j+cnt] >= 100)  //가중치가 이미 존재하면 가중치를 더해주고
-                  opMapX[i][j+cnt] = opMapX[i][j+cnt] + (cnt * w);
-                else         //가중치가 없으면 가중치를 넣어줌
-                  opMapX[i][j+cnt] = (cnt * w);
+                opMapX[i][j+cnt] = opMapX[i][j+cnt] + (cnt * w);
                 break;
               }
               else break; //돌을 둘 수 있는 자리가 아닌경우 종료
             }else break; //맵크기를 벗어나면 종료
-      
+          }
+          
           // 현재돌의 전 위치를 검사해서
           if(((j-1)!= -1)){ //맵의 크기를 벗어나지 않고
-             if ( (omap[i][j-1] == 0) ){ //돌을 둘 수 있는 위치이면
-              if(opMapX[i][j-1] >= 100) //가로 가중치 맵 검사
-                opMapX[i][j-1] = opMapX[i][j-1] + (cnt * w); 
-              else
-                opMapX[i][j-1] = (cnt * w); 
+             if ((omap[i][j-1] == 0) ){ //돌을 둘 수 있는 위치이면
+              opMapX[i][j-1] = opMapX[i][j-1] + (cnt * w);  
             }
           }
           
@@ -187,6 +182,8 @@ public class PixelPlayer101 extends Player {
     }
     return opMapX;
 	}
+	
+
 	
 	//대각선가중치- 왼쪽 위에서 오른쪽 아래로
 	public static int[][] lDiagonalSearch(int[][] omap){
@@ -209,15 +206,15 @@ public class PixelPlayer101 extends Player {
 			     //System.out.println("최종 가중치 :["+temp+"]["+j+"]");
 			     weight = 100*cnt;
 			     cmap[temp][j] = weight;
-			     if(temp-(cnt+1) >= 0 && j-(cnt+1) >= 0)
-			      cmap[temp-(cnt+1)][j-(cnt+1)] = weight; 
+			     if(temp-(cnt+1) >= 0 && j-(cnt+1) >= 0 && omap[temp-(cnt+1)][j-(cnt+1)] !=2)
+			      cmap[temp-(cnt+1)][j-(cnt+1)] += weight; 
 			     cnt=0;
 			  }
 			  if(temp == PixelTester.SIZE_OF_BOARD-1 && cnt != 0){//가중치 부여하기전에 연결이 끝날때
 			     //System.out.println("예외상황 가중치: ["+temp+"]["+j+"]");
 			     weight = 100*cnt;
-			     if(temp-cnt >= 0 && j-cnt >= 0)
-			      cmap[temp-cnt][j-cnt] = weight; 
+			     if(temp-cnt >= 0 && j-cnt >= 0 && omap[temp-cnt][j-cnt]!=2)
+			      cmap[temp-cnt][j-cnt] += weight; 
 			     cnt =0;
 			  }	  
 			}
@@ -235,14 +232,14 @@ public class PixelPlayer101 extends Player {
 			     //System.out.println("최종 가중치 :["+i+"]["+temp+"]");
 			     weight = 100*cnt;
 			     cmap[i][temp] = weight;
-			     if(i-(cnt+1) >= 0 && temp-(cnt+1) >= 0)
+			     if(i-(cnt+1) >= 0 && temp-(cnt+1) >= 0 && omap[i-(cnt+1)][temp-(cnt+1)]!=2)
 			      cmap[i-(cnt+1)][temp-(cnt+1)] = weight; 
 			     cnt=0;
 			  }
 			  if(temp == PixelTester.SIZE_OF_BOARD-1 && cnt != 0){//가중치 부여하기전에 연결이 끝날때
 			     //System.out.println("예외상황 가중치: ["+i+"]["+temp+"]");
 			     weight = 100*cnt;
-			     if(temp-cnt >= 0 && i-cnt >= 0)
+			     if(temp-cnt >= 0 && i-cnt >= 0 && omap[i-cnt][temp-cnt]!=2)
 			      cmap[i-cnt][temp-cnt] = weight; 
 			     cnt = 0;
 			  }	  
@@ -272,20 +269,20 @@ public class PixelPlayer101 extends Player {
 			      //System.out.println("최종 가중치 :["+temp+"]["+j+"]");
 			      weight = 100*cnt;
 			      cmap[temp][j] += weight;
-			      if(temp-(cnt+1) >= 0 && j+(cnt+1)<PixelTester.SIZE_OF_BOARD)
-			      cmap[temp-(cnt+1)][j+(cnt+1)] += weight; 
+			      if(temp-(cnt+1) >= 0 && j+(cnt+1)<PixelTester.SIZE_OF_BOARD && omap[temp-(cnt+1)][j+(cnt+1)]!=2)
+			       cmap[temp-(cnt+1)][j+(cnt+1)] += weight; 
 			      cnt=0;
 			    }
 			  if(temp == PixelTester.SIZE_OF_BOARD-1 && cnt != 0){ //N가중치 부여하기전에 연결이 끝날때
 			    //System.out.println("예외상황 가중치: ["+temp+"]["+j+"]");
 			    weight = 100*cnt;
-			    if(temp-cnt >= 0 && j+cnt<PixelTester.SIZE_OF_BOARD)
-			    cmap[temp-cnt][j+cnt] += weight; 
+			    if(temp-cnt >= 0 && j+cnt<PixelTester.SIZE_OF_BOARD && omap[temp-cnt][j+cnt]!=2)
+			     cmap[temp-cnt][j+cnt] += weight; 
 			    cnt =0;
 			  }	  
 			}
 	  }
-    for(int j= 0;j<PixelTester.SIZE_OF_BOARD;j++) {
+    for(int j= 0;j<PixelTester.SIZE_OF_BOARD-1;j++) {
 		  //System.out.println("diag: "+j);
 		  cnt =0;
 		  temp = j;
@@ -298,14 +295,14 @@ public class PixelPlayer101 extends Player {
 			     //System.out.println("최종 가중치 :["+i+"]["+temp+"]");
 			     weight = 100*cnt;
 			     cmap[i][temp] += weight;
-			     if(i-(cnt+1) >= 0 && temp+(cnt+1)<PixelTester.SIZE_OF_BOARD)
+			     if(i-(cnt+1) >= 0 && temp+(cnt+1)<PixelTester.SIZE_OF_BOARD && omap[i-(cnt+1)][temp+(cnt+1)]!=2)
 			      cmap[i-(cnt+1)][temp+(cnt+1)] += weight; 
 			     cnt=0;
 			  }
 			  if(temp == PixelTester.SIZE_OF_BOARD-1 && cnt != 0){//가중치 부여하기전에 연결이 끝날때
 			     //System.out.println("예외상황 가중치: ["+i+"]["+temp+"]");
 			     weight = 100*cnt;
-			     if(i-cnt >= 0 && temp+cnt<PixelTester.SIZE_OF_BOARD)
+			     if(i-cnt >= 0 && temp+cnt<PixelTester.SIZE_OF_BOARD && omap[i-cnt][temp+cnt]!=2)
 			      cmap[i-cnt][temp+cnt] += weight; 
 			     cnt = 0;
 			  }	  
@@ -313,6 +310,4 @@ public class PixelPlayer101 extends Player {
 	  }
 	  return cmap;
 		}
-	
-	
 }
