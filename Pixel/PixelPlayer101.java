@@ -55,7 +55,7 @@ public class PixelPlayer101 extends Player {
 	    if(opMap[i][y] > maxX && map[i][y] == 0){
 	       maxX = opMap[i][y];
 	       posX.setLocation(i,y);
-	    }else if(opMap[i][y] == maxY && map[i][y] == 0){
+	    }else if(opMap[i][y] == maxX && map[i][y] == 0){
 	      if(Math.abs(x-(int)posX.getX()) > Math.abs(x-i))
 	        posX.setLocation(i,y);
 	    } 

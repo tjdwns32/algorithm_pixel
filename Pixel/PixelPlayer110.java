@@ -1,8 +1,8 @@
 import java.awt.*;
 import java.util.Random;
 
-public class PixelPlayer104 extends Player {
-	PixelPlayer104(int[][] map) {
+public class PixelPlayer110 extends Player {
+	PixelPlayer110(int[][] map) {
 		super(map);
 	}
 
@@ -33,19 +33,10 @@ public class PixelPlayer104 extends Player {
 	  opMap2 = merge(opMapX,opMapY,opMaplD,opMaprD);//4개 가중치 그래프 병합
 	  
 	  opMap = merge2(opMap,opMap2);
-		
-		//System.out.println("원본테이블");
-		//print(map); 
-		//System.out.println("가로테이블");
-		//print(opMapX); 
-		//System.out.println("세로테이블");
-		//print(opMapY); 
-		//System.out.println("대각선테이블1");
-		//print(opMaplD); 
-		//System.out.println("대각선테이블2");
-		//print(opMaprD); 
-		System.out.println("병합테이블");
+	  
+	  System.out.println("병합테이블");
 		print(opMap); 
+				
 				
     int maxX = 0;
     int maxY = 0;
@@ -55,28 +46,65 @@ public class PixelPlayer104 extends Player {
 	  
 	  for(int i = 0;i<PixelTester.SIZE_OF_BOARD;i++){
 	    if(opMap[x][i] > maxY && map[x][i] == 0){
-	       maxY = opMap[x][i];
-	       posY.setLocation(x,i);
-	    }else if(opMap[x][i] == maxY && map[x][i] == 0){
-	      if(Math.abs(y-(int)posY.getY()) > Math.abs(y-i))
+	      if(isDanger(1,i)){
+	        continue;
+	      }else{
+	        maxY = opMap[x][i];
 	        posY.setLocation(x,i);
+	      }
+	    }else if(opMap[x][i] == maxY && map[x][i] == 0){
+	      if(Math.abs(y-(int)posY.getY()) > Math.abs(y-i)){
+	        if(isDanger(1,i)){
+	          continue;
+	        }else{
+	        posY.setLocation(x,i);
+	      }
+	      }
 	    }
 	    if(opMap[i][y] > maxX && map[i][y] == 0){
-	       maxX = opMap[i][y];
-	       posX.setLocation(i,y);
-	    }else if(opMap[i][y] == maxX && map[i][y] == 0){
-	      if(Math.abs(x-(int)posX.getX()) > Math.abs(x-i))
+	      if(isDanger(2,i)){
+	        continue;
+	      }else{
+	        maxX = opMap[i][y];
 	        posX.setLocation(i,y);
+	      }
+	    }else if(opMap[i][y] == maxX && map[i][y] == 0){
+	      if(Math.abs(x-(int)posX.getX()) > Math.abs(x-i)){
+	        if(isDanger(2,i)){
+	          continue;
+	        }else{
+	        posX.setLocation(i,y);
+	        } 
+	      }
 	    } 
 	  }
-	  if(maxX >= maxY) nextPosition = posX;
+	  if(maxX > maxY) nextPosition = posX;
 	  else nextPosition = posY;
 	  return nextPosition;
 	  
 	}
-	
+	public boolean isDanger(int axis, int index){
+	  boolean danger = false;
+	  if(axis == 1){
+	    for(int i = 0;i<PixelTester.SIZE_OF_BOARD;i++){
+	      if(opMap2[i][index] >= 300){
+	        danger = true;
+	        break;
+	      }
+	    }
+	  }else{
+	    for(int i = 0;i<PixelTester.SIZE_OF_BOARD;i++){
+	      if(opMap2[index][i] >= 300){
+	        danger = true;
+	        break;
+	      }
+	    }
+	  
+	  }
+	  return danger;  
+	}
 	//맵 출력 함수
-	public static void print(int[][] map){
+	public void print(int[][] map){
     for(int i = 0; i < 8; i++){
       for(int j = 0; j < 8; j++){
         System.out.print(map[i][j] + "\t ");
@@ -99,22 +127,23 @@ public class PixelPlayer104 extends Player {
         
         opMap[i][j] = opMap[i][j] + maxW;
         if(hMap[i][j] == maxW){
-          opMap[i][j] = opMap[i][j] + ( (vMap[i][j])/5 ) + ( (lDMap[i][j])/5 ) + ( (rDMap[i][j])/5 );
+          opMap[i][j] = opMap[i][j] + ( (vMap[i][j])/10 ) + ( (lDMap[i][j])/10 ) + ( (rDMap[i][j])/10 );
         }
         else if(vMap[i][j] == maxW){
-          opMap[i][j] = opMap[i][j] + ( (hMap[i][j])/5 ) + ( (lDMap[i][j])/5 ) + ( (rDMap[i][j])/5 );
+          opMap[i][j] = opMap[i][j] + ( (hMap[i][j])/10 ) + ( (lDMap[i][j])/10 ) + ( (rDMap[i][j])/10 );
         }
         else if(lDMap[i][j] == maxW){
-          opMap[i][j] = opMap[i][j] + ( (vMap[i][j])/5 ) + ( (hMap[i][j])/5 ) + ( (rDMap[i][j])/5 );
+          opMap[i][j] = opMap[i][j] + ( (vMap[i][j])/10 ) + ( (hMap[i][j])/10 ) + ( (rDMap[i][j])/10 );
         }
         else if(rDMap[i][j] == maxW){ 
-          opMap[i][j] = opMap[i][j] + ( (vMap[i][j])/5 ) + ( (hMap[i][j])/5 ) + ( (lDMap[i][j])/5 ); 
+          opMap[i][j] = opMap[i][j] + ( (vMap[i][j])/10 ) + ( (hMap[i][j])/10 ) + ( (lDMap[i][j])/10 ); 
         }
       }
     }
 	  
 	  return opMap;
 	}
+	
 	public static int[][] merge2(int opMap1[][], int opMap2[][]){
 	  int[][] opMap = new int[8][8];
 	  int maxW = 0;
