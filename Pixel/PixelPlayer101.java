@@ -18,6 +18,7 @@ public class PixelPlayer101 extends Player {
     int [][] opMaplD = new int[8][8];
     int [][] opMaprD = new int[8][8];
     int [][] opMap = new int[8][8]; 
+    int [][] opMap2 = new int[8][8]; 
     
     opMapX = horizonSearch(map,myStone);//가로 가중치 부여
     opMapY = verticalSearch(map,myStone);//세로 가중치 부여
@@ -25,19 +26,17 @@ public class PixelPlayer101 extends Player {
     opMaprD = rDiagonalSearch(map,myStone);//오른쪽위->왼쪽 아래 대각선 가중치 부여
     opMap = merge(opMapX,opMapY,opMaplD,opMaprD);//4개 가중치 그래프 병합
 		
-		
-		//System.out.println("원본테이블");
-		//print(map); 
-		//System.out.println("가로테이블");
-		//print(opMapX); 
-		//System.out.println("세로테이블");
-		//print(opMapY); 
-		//System.out.println("대각선테이블1");
-		//print(opMaplD); 
-		//System.out.println("대각선테이블2");
-		//print(opMaprD); 
-		System.out.println("병합테이블");
+		opMapX = horizonSearch(map,enemyStone);//가로 가중치 부여
+    opMapY = verticalSearch(map,enemyStone);//세로 가중치 부여
+    opMaplD = lDiagonalSearch(map,enemyStone);//왼쪽위->오른쪽 아래 대각선 가중치 부여
+    opMaprD = rDiagonalSearch(map,enemyStone);//오른쪽위->왼쪽 아래 대각선 가중치 부여
+	  opMap2 = merge(opMapX,opMapY,opMaplD,opMaprD);//4개 가중치 그래프 병합
+	  
+	  opMap = merge2(opMap,opMap2);
+	  
+	  System.out.println("병합테이블");
 		print(opMap); 
+				
 				
     int maxX = 0;
     int maxY = 0;
@@ -105,6 +104,25 @@ public class PixelPlayer101 extends Player {
       }
     }
 	  
+	  return opMap;
+	}
+	
+	public static int[][] merge2(int opMap1[][], int opMap2[][]){
+	  int[][] opMap = new int[8][8];
+	  int maxW = 0;
+	  
+	  for(int i = 0; i < 8; i++){
+      for(int j = 0; j < 8; j++){
+        maxW = Math.max(opMap1[i][j], opMap2[i][j]);
+        
+        opMap[i][j] = opMap[i][j] + maxW;
+        if(opMap1[i][j] == maxW){
+          opMap[i][j] = opMap[i][j] + ( (opMap2[i][j])/10 );
+        }else{
+          opMap[i][j] = opMap[i][j] + ( (opMap1[i][j])/10 );
+        }
+      }
+    }
 	  return opMap;
 	}
 	
