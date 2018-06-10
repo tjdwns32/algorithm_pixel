@@ -20,6 +20,8 @@ public class PixelPlayer101 extends Player {
     int [][] opMap = new int[8][8]; 
     int [][] opMap2 = new int[8][8]; 
     
+    
+    
     opMapX = horizonSearch(map,myStone);//가로 가중치 부여
     opMapY = verticalSearch(map,myStone);//세로 가중치 부여
     opMaplD = lDiagonalSearch(map,myStone);//왼쪽위->오른쪽 아래 대각선 가중치 부여
@@ -34,7 +36,14 @@ public class PixelPlayer101 extends Player {
 	  
 	  opMap = merge2(opMap,opMap2);
 	  
-	  System.out.println("병합테이블");
+	  for(int i = 0;i<PixelTester.SIZE_OF_BOARD;i++){
+      for(int j = 0;j<PixelTester.SIZE_OF_BOARD;j++){
+        if(map[i][j] != 0)
+          opMap[i][j] = map[i][j];
+      }
+    }
+	  
+	  System.out.println("p2 : 병합테이블");
 		print(opMap); 
 				
 				
@@ -60,8 +69,13 @@ public class PixelPlayer101 extends Player {
 	        posX.setLocation(i,y);
 	    } 
 	  }
-	  if(maxX >= maxY) nextPosition = posX;
-	  else nextPosition = posY;
+	  if(maxX > maxY) nextPosition = posX;
+	  else if(maxX < maxY) nextPosition = posY;
+	  else{
+	    int randN = (int)(Math.random()*2)+1;
+	    if(randN == 1) nextPosition = posX; 
+	    else nextPosition = posY;
+	  } 
 	  return nextPosition;
 	  
 	}
