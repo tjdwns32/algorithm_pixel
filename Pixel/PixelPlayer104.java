@@ -1,8 +1,8 @@
 import java.awt.*;
 import java.util.Random;
 
-public class PixelPlayer101 extends Player {
-	PixelPlayer101(int[][] map) {
+public class PixelPlayer104 extends Player {
+	PixelPlayer104(int[][] map) {
 		super(map);
 	}
 
@@ -91,16 +91,16 @@ public class PixelPlayer101 extends Player {
         
         opMap[i][j] = opMap[i][j] + maxW;
         if(hMap[i][j] == maxW){
-          opMap[i][j] = opMap[i][j] + ( (vMap[i][j])/10 ) + ( (lDMap[i][j])/10 ) + ( (rDMap[i][j])/10 );
+          opMap[i][j] = opMap[i][j] + ( (vMap[i][j])/5 ) + ( (lDMap[i][j])/5 ) + ( (rDMap[i][j])/5 );
         }
         else if(vMap[i][j] == maxW){
-          opMap[i][j] = opMap[i][j] + ( (hMap[i][j])/10 ) + ( (lDMap[i][j])/10 ) + ( (rDMap[i][j])/10 );
+          opMap[i][j] = opMap[i][j] + ( (hMap[i][j])/5 ) + ( (lDMap[i][j])/5 ) + ( (rDMap[i][j])/5 );
         }
         else if(lDMap[i][j] == maxW){
-          opMap[i][j] = opMap[i][j] + ( (vMap[i][j])/10 ) + ( (hMap[i][j])/10 ) + ( (rDMap[i][j])/10 );
+          opMap[i][j] = opMap[i][j] + ( (vMap[i][j])/5 ) + ( (hMap[i][j])/5 ) + ( (rDMap[i][j])/5 );
         }
         else if(rDMap[i][j] == maxW){ 
-          opMap[i][j] = opMap[i][j] + ( (vMap[i][j])/10 ) + ( (hMap[i][j])/10 ) + ( (lDMap[i][j])/10 ); 
+          opMap[i][j] = opMap[i][j] + ( (vMap[i][j])/5 ) + ( (hMap[i][j])/5 ) + ( (lDMap[i][j])/5 ); 
         }
       }
     }
