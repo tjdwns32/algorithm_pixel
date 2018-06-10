@@ -20,6 +20,8 @@ public class PixelPlayer101 extends Player {
     int [][] opMap = new int[8][8]; 
     int [][] opMap2 = new int[8][8]; 
     
+    
+    
     opMapX = horizonSearch(map,myStone);//가로 가중치 부여
     opMapY = verticalSearch(map,myStone);//세로 가중치 부여
     opMaplD = lDiagonalSearch(map,myStone);//왼쪽위->오른쪽 아래 대각선 가중치 부여
@@ -34,7 +36,14 @@ public class PixelPlayer101 extends Player {
 	  
 	  opMap = merge2(opMap,opMap2);
 	  
-	  System.out.println("병합테이블");
+	  for(int i = 0;i<PixelTester.SIZE_OF_BOARD;i++){
+      for(int j = 0;j<PixelTester.SIZE_OF_BOARD;j++){
+        if(map[i][j] != 0)
+          opMap[i][j] = map[i][j];
+      }
+    }
+	  
+	  System.out.println("p2 : 병합테이블");
 		print(opMap); 
 				
 				
@@ -55,76 +64,20 @@ public class PixelPlayer101 extends Player {
 	    if(opMap[i][y] > maxX && map[i][y] == 0){
 	       maxX = opMap[i][y];
 	       posX.setLocation(i,y);
-	    }else if(opMap[i][y] == maxY && map[i][y] == 0){
+	    }else if(opMap[i][y] == maxX && map[i][y] == 0){
 	      if(Math.abs(x-(int)posX.getX()) > Math.abs(x-i))
 	        posX.setLocation(i,y);
 	    } 
 	  }
-	  if(maxX >= maxY) nextPosition = posX;
-	  else nextPosition = posY;
+	  if(maxX > maxY) nextPosition = posX;
+	  else if(maxX < maxY) nextPosition = posY;
+	  else{
+	    int randN = (int)(Math.random()*2)+1;
+	    if(randN == 1) nextPosition = posX; 
+	    else nextPosition = posY;
+	  } 
 	  return nextPosition;
 	  
-//		for(int i = 0; i < PixelTester.SIZE_OF_BOARD; i++){//상대방 돌 위치에서 세로를 검사
-//		  if(map[i][cy] == 0){ //돌을 둘 수 있는 위치이면
-//		    //세로축에서 최대 가중치 값을 찾음
-//				if(opMap[i][cy] > maxX){ 
-//				  maxX = opMap[i][cy];
-//					posX = i;
-//				}
-//				else if(opMap[i][cy] == maxX){ //가중치가 같으면
-//				  if(Math.abs(cy-i) < Math.abs(cy-posX))
-//					  posX = i;
-//					//System.out.println(posX);
-//				}
-//			}
-//		}
-//		System.out.println("--세로축검사--");
-//		System.out.println("maxX : "+maxX);
-//		System.out.println("posX : "+posX);
-//					
-//		for(int i = 0; i < PixelTester.SIZE_OF_BOARD; i++){//상대방 돌 위치에서 가로를 검사
-//		  if(map[x][i] == 0){ //돌을 둘 수 있는 위치이면  
-//		    //가로축에서 최대 가중치 값을 찾음
-//				if(opMap[cx][i] > maxY){ 
-//				  maxY = opMap[cx][i];
-//					posY = i;
-//				}
-//				else if (opMap[cx][i] == maxY){ //가중치가 같으면
-//				  if(Math.abs(cy-i) < Math.abs(cy-posY))
-//					  posY = i;
-//					System.out.println(posY);
-//				}
-//			}
-//		}
-//					
-//		System.out.println("--가로축검사--");
-//		System.out.println("maxY : "+maxY);
-//		System.out.println("posY : "+posY);
-//		if(maxX > maxY){
-//		  nextPosition = new Point(posX, cy);
-//		  System.out.println(nextPosition);
-//		  return nextPosition;
-//		}
-//		else if(maxX < maxY){  
-//		  nextPosition = new Point(cx, posY);
-//		  System.out.println(nextPosition);
-//		  return nextPosition;
-//		}
-//		else{
-//		   if(Math.abs(cy-posY) >= Math.abs(cx-posX)){
-//		     nextPosition = new Point(posX, cy);
-//		     System.out.println(nextPosition);
-//		     return nextPosition;
-//			 }
-//			 else if(Math.abs(cy-posX) < Math.abs(cx-posY)){
-//			   nextPosition = new Point(cx, posY);
-//			   System.out.println(nextPosition);
-//			   return nextPosition;
-//			 }
-//		}  
-
-//		nextPosition = new Point(x, y);
-//		return nextPosition;
 	}
 	
 	//맵 출력 함수
