@@ -6,6 +6,7 @@ public class PixelPlayer110 extends Player {
 		super(map);
 	}
 	
+   static int [][] opMap1 = new int[8][8]; 
    static int [][] opMap2 = new int[8][8]; 
 
 	public Point nextPosition(Point lastPosition) {  
@@ -25,7 +26,7 @@ public class PixelPlayer110 extends Player {
     opMapY = verticalSearch(map,myStone);//세로 가중치 부여
     opMaplD = lDiagonalSearch(map,myStone);//왼쪽위->오른쪽 아래 대각선 가중치 부여
     opMaprD = rDiagonalSearch(map,myStone);//오른쪽위->왼쪽 아래 대각선 가중치 부여
-    opMap = merge(opMapX,opMapY,opMaplD,opMaprD);//4개 가중치 그래프 병합
+    opMap1 = merge(opMapX,opMapY,opMaplD,opMaprD);//4개 가중치 그래프 병합
 		
 		opMapX = horizonSearch(map,enemyStone);//가로 가중치 부여
     opMapY = verticalSearch(map,enemyStone);//세로 가중치 부여
@@ -33,7 +34,7 @@ public class PixelPlayer110 extends Player {
     opMaprD = rDiagonalSearch(map,enemyStone);//오른쪽위->왼쪽 아래 대각선 가중치 부여
 	  opMap2 = merge(opMapX,opMapY,opMaplD,opMaprD);//4개 가중치 그래프 병합
 	  
-	  opMap = merge2(opMap,opMap2);
+	  opMap = merge2(opMap1,opMap2);
 	  
 	  System.out.println("병합테이블");
 		print(opMap); 
@@ -47,6 +48,7 @@ public class PixelPlayer110 extends Player {
 	  
 	  for(int i = 0;i<PixelTester.SIZE_OF_BOARD;i++){
 	    if(opMap[x][i] > maxY && map[x][i] == 0){
+	      if(opMap1[x][i]>=300) return new Point(x,i); 
 	      if(isDanger(1,i,x)){
 	        continue;
 	      }else{
@@ -54,6 +56,7 @@ public class PixelPlayer110 extends Player {
 	        posY.setLocation(x,i);
 	      }
 	    }else if(opMap[x][i] == maxY && map[x][i] == 0){
+	      if(opMap1[x][i]>=300) return new Point(x,i); 
 	      if(Math.abs(y-(int)posY.getY()) > Math.abs(y-i)){
 	        if(isDanger(1,i,x)){
 	          continue;
@@ -63,6 +66,7 @@ public class PixelPlayer110 extends Player {
 	      }
 	    }
 	    if(opMap[i][y] > maxX && map[i][y] == 0){
+	      if(opMap1[i][y]>=300) return new Point(i,y); 
 	      if(isDanger(2,i,y)){
 	        continue;
 	      }else{
@@ -70,6 +74,7 @@ public class PixelPlayer110 extends Player {
 	        posX.setLocation(i,y);
 	      }
 	    }else if(opMap[i][y] == maxX && map[i][y] == 0){
+	      if(opMap1[i][y]>=300) return new Point(i,y); 
 	      if(Math.abs(x-(int)posX.getX()) > Math.abs(x-i)){
 	        if(isDanger(2,i,y)){
 	          continue;
