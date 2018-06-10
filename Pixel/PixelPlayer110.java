@@ -5,6 +5,8 @@ public class PixelPlayer110 extends Player {
 	PixelPlayer110(int[][] map) {
 		super(map);
 	}
+	
+   static int [][] opMap2 = new int[8][8]; 
 
 	public Point nextPosition(Point lastPosition) {  
 		int x = (int)lastPosition.getX(), y = (int)lastPosition.getY();
@@ -18,7 +20,6 @@ public class PixelPlayer110 extends Player {
     int [][] opMaplD = new int[8][8];
     int [][] opMaprD = new int[8][8];
     int [][] opMap = new int[8][8]; 
-    int [][] opMap2 = new int[8][8]; 
     
     opMapX = horizonSearch(map,myStone);//가로 가중치 부여
     opMapY = verticalSearch(map,myStone);//세로 가중치 부여
@@ -46,7 +47,7 @@ public class PixelPlayer110 extends Player {
 	  
 	  for(int i = 0;i<PixelTester.SIZE_OF_BOARD;i++){
 	    if(opMap[x][i] > maxY && map[x][i] == 0){
-	      if(isDanger(1,i)){
+	      if(isDanger(1,i,x)){
 	        continue;
 	      }else{
 	        maxY = opMap[x][i];
@@ -54,7 +55,7 @@ public class PixelPlayer110 extends Player {
 	      }
 	    }else if(opMap[x][i] == maxY && map[x][i] == 0){
 	      if(Math.abs(y-(int)posY.getY()) > Math.abs(y-i)){
-	        if(isDanger(1,i)){
+	        if(isDanger(1,i,x)){
 	          continue;
 	        }else{
 	        posY.setLocation(x,i);
@@ -62,7 +63,7 @@ public class PixelPlayer110 extends Player {
 	      }
 	    }
 	    if(opMap[i][y] > maxX && map[i][y] == 0){
-	      if(isDanger(2,i)){
+	      if(isDanger(2,i,y)){
 	        continue;
 	      }else{
 	        maxX = opMap[i][y];
@@ -70,7 +71,7 @@ public class PixelPlayer110 extends Player {
 	      }
 	    }else if(opMap[i][y] == maxX && map[i][y] == 0){
 	      if(Math.abs(x-(int)posX.getX()) > Math.abs(x-i)){
-	        if(isDanger(2,i)){
+	        if(isDanger(2,i,y)){
 	          continue;
 	        }else{
 	        posX.setLocation(i,y);
@@ -79,22 +80,27 @@ public class PixelPlayer110 extends Player {
 	    } 
 	  }
 	  if(maxX > maxY) nextPosition = posX;
-	  else nextPosition = posY;
+	  else if(maxX < maxY) nextPosition = posY;
+	  else{
+	    int randN = (int)(Math.random()*2)+1;
+	    if(randN == 1) nextPosition = posX; 
+	    else nextPosition = posY;
+	  } 
 	  return nextPosition;
 	  
 	}
-	public boolean isDanger(int axis, int index){
+	public boolean isDanger(int axis, int index,int except){
 	  boolean danger = false;
 	  if(axis == 1){
 	    for(int i = 0;i<PixelTester.SIZE_OF_BOARD;i++){
-	      if(opMap2[i][index] >= 300){
+	      if(opMap2[i][index] >= 300 && i!=except){
 	        danger = true;
 	        break;
 	      }
 	    }
 	  }else{
 	    for(int i = 0;i<PixelTester.SIZE_OF_BOARD;i++){
-	      if(opMap2[index][i] >= 300){
+	      if(opMap2[index][i] >= 300 && i!=except){
 	        danger = true;
 	        break;
 	      }
