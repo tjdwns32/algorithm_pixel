@@ -8,6 +8,7 @@ public class PixelPlayer110 extends Player {
 	
    static int [][] opMap1 = new int[8][8]; 
    static int [][] opMap2 = new int[8][8]; 
+   static int [][] opMap = new int[8][8]; 
 
 	public Point nextPosition(Point lastPosition) {  
 		int x = (int)lastPosition.getX(), y = (int)lastPosition.getY();
@@ -22,7 +23,6 @@ public class PixelPlayer110 extends Player {
     int [][] opMapY = new int[8][8];
     int [][] opMaplD = new int[8][8];
     int [][] opMaprD = new int[8][8];
-    int [][] opMap = new int[8][8]; 
     
     opMapX = horizonSearch(map,myStone);//가로 가중치 부여
     opMapY = verticalSearch(map,myStone);//세로 가중치 부여
@@ -54,12 +54,12 @@ public class PixelPlayer110 extends Player {
 	    if(opMap1[x][i]>=300) return new Point(x,i);
 	    if(opMap1[i][y]>=300) return new Point(i,y);
 	    //놓을 수 있는 위치에 우리 돌 세개가 연결된 게 있으면 착수
-	    if(!isDanger(x,i) && map[x][i] == 0){	  
-	      if(opMap[x][i] > maxY){
-	        maxY = opMap[x][i];
+	    if(!isDanger(x,i) && map[x][i] == 0){
+	      if((opMap[x][i] - getLoss(x,i)) > maxY){
+	        maxY = opMap[x][i] - getLoss(x,i);
 	        System.out.println("maxY"+maxY);
 	        posY.setLocation(x,i);
-	      }else if(opMap[x][i] == maxY){
+	      }else if((opMap[x][i] - getLoss(x,i)) == maxY){
 	        if(y == (int)posY.getY()){
 	           posY.setLocation(x,i);
 	           break;
@@ -70,10 +70,11 @@ public class PixelPlayer110 extends Player {
 	      }
 	    }
 	    if(!isDanger(i,y) && map[i][y] == 0){
-	      if(opMap[i][y] > maxX){
-	        maxX = opMap[i][y];
+	      if((opMap[i][y] - getLoss(i,y)) > maxX){
+	        maxX = opMap[i][y] - getLoss(i,y);
+	        System.out.println("max"+maxX);
 	        posX.setLocation(i,y);
-	      }else if(opMap[i][y] == maxX){ 
+	      }else if((opMap[i][y] - getLoss(i,y)) == maxX){ 
 	        if(x == (int)posX.getX()){
 	          posX.setLocation(i,y);
 	          break;
@@ -82,8 +83,7 @@ public class PixelPlayer110 extends Player {
 	        } 
 	      }
 	    } 
-	  }
-	  
+	  }  
 	  System.out.println("PosX: ["+posX.getX()+"]["+posX.getY()+"]"+ maxX);
 	  System.out.println("PosY: ["+posY.getX()+"]["+posY.getY()+"]"+ maxY);
 	  if(maxX > maxY) nextPosition = posX;
@@ -97,6 +97,22 @@ public class PixelPlayer110 extends Player {
 	  //System.out.println("(2) ["+nextPosition.getX()+"]["+nextPosition.getY()+"]"); 
 	  return nextPosition;
 	  
+	}
+	public int getBenefit(int x,int y){
+	  int maxB = -500;
+	  for(int i = 0;i<PixelTester.SIZE_OF_BOARD;i++){
+	    if(opMap1[x][i] >= maxB && i!=y) maxB = opMap1[x][i];
+	    if(opMap1[i][y] >= maxB && i!=x) maxB = opMap1[i][y];
+	  }
+	  return maxB;
+	}
+	public int getLoss(int x,int y){
+	  int maxE = -500;
+	  for(int i = 0;i<PixelTester.SIZE_OF_BOARD;i++){
+	    if(opMap2[x][i] >= maxE && i!=y) maxE = opMap2[x][i];
+	    if(opMap2[i][y] >= maxE && i!=x) maxE = opMap2[i][y];
+	  }
+	  return maxE;
 	}
 	public boolean isDanger(int x,int y){
 	  boolean danger = false;
@@ -194,7 +210,7 @@ public class PixelPlayer110 extends Player {
           }
           
           // 현재돌의 전 위치를 검사해서
-          if(((j-1)!= -1)){ //맵의 크기를 벗어나지 않고
+          if(((j-1)!=-1)){ //맵의 크기를 벗어나지 않고
              if ((omap[j-1][i] == 0) ){ //돌을 둘 수 있는 위치이면
               opMapY[j-1][i] += (cnt * w);  
             }
