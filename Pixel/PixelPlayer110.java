@@ -16,6 +16,8 @@ public class PixelPlayer110 extends Player {
 	  int enemyStone = (PixelTester.turn == 1?2:1);
 		Point nextPosition;
 		
+		//if(myStone == 1 && map[2][3] == 0) return new Point(2,3);
+		
 		int [][] opMapX = new int[8][8]; 
     int [][] opMapY = new int[8][8];
     int [][] opMaplD = new int[8][8];
@@ -36,54 +38,54 @@ public class PixelPlayer110 extends Player {
 	  
 	  opMap = merge2(opMap1,opMap2);
 	  
-	  System.out.println("병합테이블");
-		print(opMap); 
+	  System.out.println("110_상대테이블");
+		print(opMap2);
+		System.out.println("110_통합테이블");
+		print(opMap);  
 				
 				
-    int maxX = 0;
-    int maxY = 0;
+    int maxX = -1;
+    int maxY = -1;
     Point posY = new Point();
     Point posX = new Point();
 	  System.out.println("lastPosition: ["+x+"]["+y+"]");
 	  
 	  for(int i = 0;i<PixelTester.SIZE_OF_BOARD;i++){
-	    if(opMap[x][i] > maxY && map[x][i] == 0){
-	      if(opMap1[x][i]>=300) return new Point(x,i); 
-	      if(isDanger(1,i,x)){
-	        continue;
-	      }else{
+	    if(opMap1[x][i]>=300) return new Point(x,i);
+	    if(opMap1[i][y]>=300) return new Point(i,y);
+	    //놓을 수 있는 위치에 우리 돌 세개가 연결된 게 있으면 착수
+	    if(!isDanger(x,i) && map[x][i] == 0){	  
+	      if(opMap[x][i] > maxY){
 	        maxY = opMap[x][i];
+	        System.out.println("maxY"+maxY);
 	        posY.setLocation(x,i);
-	      }
-	    }else if(opMap[x][i] == maxY && map[x][i] == 0){
-	      if(opMap1[x][i]>=300) return new Point(x,i); 
-	      if(Math.abs(y-(int)posY.getY()) > Math.abs(y-i)){
-	        if(isDanger(1,i,x)){
-	          continue;
-	        }else{
-	        posY.setLocation(x,i);
-	      }
+	      }else if(opMap[x][i] == maxY){
+	        if(y == (int)posY.getY()){
+	           posY.setLocation(x,i);
+	           break;
+	        }else if(Math.abs(y-(int)posY.getY()) >= Math.abs(y-i)){ 
+	          System.out.println("maxY"+maxY);
+	          posY.setLocation(x,i);
+	        }
 	      }
 	    }
-	    if(opMap[i][y] > maxX && map[i][y] == 0){
-	      if(opMap1[i][y]>=300) return new Point(i,y); 
-	      if(isDanger(2,i,y)){
-	        continue;
-	      }else{
+	    if(!isDanger(i,y) && map[i][y] == 0){
+	      if(opMap[i][y] > maxX){
 	        maxX = opMap[i][y];
 	        posX.setLocation(i,y);
-	      }
-	    }else if(opMap[i][y] == maxX && map[i][y] == 0){
-	      if(opMap1[i][y]>=300) return new Point(i,y); 
-	      if(Math.abs(x-(int)posX.getX()) > Math.abs(x-i)){
-	        if(isDanger(2,i,y)){
-	          continue;
-	        }else{
-	        posX.setLocation(i,y);
+	      }else if(opMap[i][y] == maxX){ 
+	        if(x == (int)posX.getX()){
+	          posX.setLocation(i,y);
+	          break;
+	        }else if(Math.abs(x-(int)posX.getX()) >= Math.abs(x-i)){
+	          posX.setLocation(i,y);
 	        } 
 	      }
 	    } 
 	  }
+	  
+	  System.out.println("PosX: ["+posX.getX()+"]["+posX.getY()+"]"+ maxX);
+	  System.out.println("PosY: ["+posY.getX()+"]["+posY.getY()+"]"+ maxY);
 	  if(maxX > maxY) nextPosition = posX;
 	  else if(maxX < maxY) nextPosition = posY;
 	  else{
@@ -91,28 +93,24 @@ public class PixelPlayer110 extends Player {
 	    if(randN == 1) nextPosition = posX; 
 	    else nextPosition = posY;
 	  } 
+	  
+	  //System.out.println("(2) ["+nextPosition.getX()+"]["+nextPosition.getY()+"]"); 
 	  return nextPosition;
 	  
 	}
-	public boolean isDanger(int axis, int index,int except){
+	public boolean isDanger(int x,int y){
 	  boolean danger = false;
-	  if(axis == 1){
-	    for(int i = 0;i<PixelTester.SIZE_OF_BOARD;i++){
-	      if(opMap2[i][index] >= 300 && i!=except){
-	        danger = true;
-	        break;
-	      }
+	  for(int i = 0;i<PixelTester.SIZE_OF_BOARD;i++){
+	    if(opMap2[x][i] >= 300 && i!=y){
+	      danger = true;
+	      break;
 	    }
-	  }else{
-	    for(int i = 0;i<PixelTester.SIZE_OF_BOARD;i++){
-	      if(opMap2[index][i] >= 300 && i!=except){
-	        danger = true;
-	        break;
-	      }
+	    if(opMap2[i][y] >= 300 && i!=x){
+	      danger = true;
+	      break;
 	    }
-	  
 	  }
-	  return danger;  
+	 return danger;  
 	}
 	//맵 출력 함수
 	public void print(int[][] map){
@@ -162,12 +160,11 @@ public class PixelPlayer110 extends Player {
 	  for(int i = 0; i < 8; i++){
       for(int j = 0; j < 8; j++){
         maxW = Math.max(opMap1[i][j], opMap2[i][j]);
-        
-        opMap[i][j] = opMap[i][j] + maxW;
+        opMap[i][j] += maxW;
         if(opMap1[i][j] == maxW){
-          opMap[i][j] = opMap[i][j] + ( (opMap2[i][j])/10 );
+          opMap[i][j] += ((opMap2[i][j])/10 );
         }else{
-          opMap[i][j] = opMap[i][j] + ( (opMap1[i][j])/10 );
+          opMap[i][j] += ((opMap1[i][j])/10 );
         }
       }
     }
@@ -226,8 +223,6 @@ public class PixelPlayer110 extends Player {
           while(true){ //붙어있는 돌을 확인
             if((j+cnt) < 8){ //맵의 크기를 벗어나지 않는 선에서
               if(omap[i][j+cnt] == myStone){ //붙어있는 돌이 존재하면 카운트하
-                System.out.println("["+i+"]["+(j+cnt)+"]"); 
-              if(omap[i][j+cnt] == myStone) //붙어있는 돌이 존재하면 카운트하고
                 ++cnt;
               }
               else if(omap[i][j+cnt] == 0){ //돌을 둘수있는 위치이면 가로가중치 맵을 검사

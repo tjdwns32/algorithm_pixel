@@ -5,6 +5,9 @@ public class PixelPlayer104 extends Player {
 	PixelPlayer104(int[][] map) {
 		super(map);
 	}
+	
+   static int [][] opMap1 = new int[8][8]; 
+   static int [][] opMap2 = new int[8][8]; 
 
 	public Point nextPosition(Point lastPosition) {  
 		int x = (int)lastPosition.getX(), y = (int)lastPosition.getY();
@@ -18,13 +21,12 @@ public class PixelPlayer104 extends Player {
     int [][] opMaplD = new int[8][8];
     int [][] opMaprD = new int[8][8];
     int [][] opMap = new int[8][8]; 
-    int [][] opMap2 = new int[8][8]; 
     
     opMapX = horizonSearch(map,myStone);//가로 가중치 부여
     opMapY = verticalSearch(map,myStone);//세로 가중치 부여
     opMaplD = lDiagonalSearch(map,myStone);//왼쪽위->오른쪽 아래 대각선 가중치 부여
     opMaprD = rDiagonalSearch(map,myStone);//오른쪽위->왼쪽 아래 대각선 가중치 부여
-    opMap = merge(opMapX,opMapY,opMaplD,opMaprD);//4개 가중치 그래프 병합
+    opMap1 = merge(opMapX,opMapY,opMaplD,opMaprD);//4개 가중치 그래프 병합
 		
 		opMapX = horizonSearch(map,enemyStone);//가로 가중치 부여
     opMapY = verticalSearch(map,enemyStone);//세로 가중치 부여
@@ -32,20 +34,11 @@ public class PixelPlayer104 extends Player {
     opMaprD = rDiagonalSearch(map,enemyStone);//오른쪽위->왼쪽 아래 대각선 가중치 부여
 	  opMap2 = merge(opMapX,opMapY,opMaplD,opMaprD);//4개 가중치 그래프 병합
 	  
-	  opMap = merge2(opMap,opMap2);
-		
-		//System.out.println("원본테이블");
-		//print(map); 
-		//System.out.println("가로테이블");
-		//print(opMapX); 
-		//System.out.println("세로테이블");
-		//print(opMapY); 
-		//System.out.println("대각선테이블1");
-		//print(opMaplD); 
-		//System.out.println("대각선테이블2");
-		//print(opMaprD); 
-		System.out.println("병합테이블");
-		print(opMap); 
+	  opMap = merge2(opMap1,opMap2);
+	  
+	  System.out.println("110_상대테이블");
+		print(opMap2); 
+				
 				
     int maxX = 0;
     int maxY = 0;
@@ -55,28 +48,68 @@ public class PixelPlayer104 extends Player {
 	  
 	  for(int i = 0;i<PixelTester.SIZE_OF_BOARD;i++){
 	    if(opMap[x][i] > maxY && map[x][i] == 0){
-	       maxY = opMap[x][i];
-	       posY.setLocation(x,i);
-	    }else if(opMap[x][i] == maxY && map[x][i] == 0){
-	      if(Math.abs(y-(int)posY.getY()) > Math.abs(y-i))
+	      if(opMap1[x][i]>=300) return new Point(x,i); 
+	      if(isDanger(x,i)){
+	        continue;
+	      }else{
+	        maxY = opMap[x][i];
 	        posY.setLocation(x,i);
+	      }
+	    }else if(opMap[x][i] == maxY && map[x][i] == 0){
+	      if(opMap1[x][i]>=300) return new Point(x,i); 
+	      if(Math.abs(y-(int)posY.getY()) > Math.abs(y-i)){
+	        if(isDanger(x,i)){
+	          continue;
+	        }else{
+	        posY.setLocation(x,i);
+	      }
+	      }
 	    }
 	    if(opMap[i][y] > maxX && map[i][y] == 0){
-	       maxX = opMap[i][y];
-	       posX.setLocation(i,y);
-	    }else if(opMap[i][y] == maxX && map[i][y] == 0){
-	      if(Math.abs(x-(int)posX.getX()) > Math.abs(x-i))
+	      if(opMap1[i][y]>=300) return new Point(i,y); 
+	      if(isDanger(i,y)){
+	        continue;
+	      }else{
+	        maxX = opMap[i][y];
 	        posX.setLocation(i,y);
+	      }
+	    }else if(opMap[i][y] == maxX && map[i][y] == 0){
+	      if(opMap1[i][y]>=300) return new Point(i,y); 
+	      if(Math.abs(x-(int)posX.getX()) > Math.abs(x-i)){
+	        if(isDanger(i,y)){
+	          continue;
+	        }else{
+	        posX.setLocation(i,y);
+	        } 
+	      }
 	    } 
 	  }
-	  if(maxX >= maxY) nextPosition = posX;
-	  else nextPosition = posY;
+	  if(maxX > maxY) nextPosition = posX;
+	  else if(maxX < maxY) nextPosition = posY;
+	  else{
+	    int randN = (int)(Math.random()*2)+1;
+	    if(randN == 1) nextPosition = posX; 
+	    else nextPosition = posY;
+	  } 
 	  return nextPosition;
 	  
 	}
-	
+	public boolean isDanger(int x,int y){
+	  boolean danger = false;
+	  for(int i = 0;i<PixelTester.SIZE_OF_BOARD;i++){
+	    if(opMap2[x][i] >= 300 && i!=y){
+	      danger = true;
+	      break;
+	    }
+	    if(opMap2[i][y] >= 300 && i!=x){
+	      danger = true;
+	      break;
+	    }
+	  }
+	 return danger;  
+	}
 	//맵 출력 함수
-	public static void print(int[][] map){
+	public void print(int[][] map){
     for(int i = 0; i < 8; i++){
       for(int j = 0; j < 8; j++){
         System.out.print(map[i][j] + "\t ");
@@ -99,22 +132,23 @@ public class PixelPlayer104 extends Player {
         
         opMap[i][j] = opMap[i][j] + maxW;
         if(hMap[i][j] == maxW){
-          opMap[i][j] = opMap[i][j] + ( (vMap[i][j])/5 ) + ( (lDMap[i][j])/5 ) + ( (rDMap[i][j])/5 );
+          opMap[i][j] = opMap[i][j] + ( (vMap[i][j])/10 ) + ( (lDMap[i][j])/10 ) + ( (rDMap[i][j])/10 );
         }
         else if(vMap[i][j] == maxW){
-          opMap[i][j] = opMap[i][j] + ( (hMap[i][j])/5 ) + ( (lDMap[i][j])/5 ) + ( (rDMap[i][j])/5 );
+          opMap[i][j] = opMap[i][j] + ( (hMap[i][j])/10 ) + ( (lDMap[i][j])/10 ) + ( (rDMap[i][j])/10 );
         }
         else if(lDMap[i][j] == maxW){
-          opMap[i][j] = opMap[i][j] + ( (vMap[i][j])/5 ) + ( (hMap[i][j])/5 ) + ( (rDMap[i][j])/5 );
+          opMap[i][j] = opMap[i][j] + ( (vMap[i][j])/10 ) + ( (hMap[i][j])/10 ) + ( (rDMap[i][j])/10 );
         }
         else if(rDMap[i][j] == maxW){ 
-          opMap[i][j] = opMap[i][j] + ( (vMap[i][j])/5 ) + ( (hMap[i][j])/5 ) + ( (lDMap[i][j])/5 ); 
+          opMap[i][j] = opMap[i][j] + ( (vMap[i][j])/10 ) + ( (hMap[i][j])/10 ) + ( (lDMap[i][j])/10 ); 
         }
       }
     }
 	  
 	  return opMap;
 	}
+	
 	public static int[][] merge2(int opMap1[][], int opMap2[][]){
 	  int[][] opMap = new int[8][8];
 	  int maxW = 0;
