@@ -6,15 +6,28 @@ public class PixelPlayer110 extends Player {
 		super(map);
 	}
 	
+	 
+	 static int myStone;
+	 static int enemyStone;
+	
    static int [][] opMap1 = new int[8][8]; 
    static int [][] opMap2 = new int[8][8]; 
-
-	public Point nextPosition(Point lastPosition) {  
+   static int [][] opMap = new int[8][8]; 
+  
+  public void setStone(){//내 돌과 상대 돌 파악 
+    if(PixelTester.turn == 1){
+      myStone = 1;
+      enemyStone = 2;
+    }else{
+      myStone = 2;
+      enemyStone = 1;
+    }
+  }
+	public Point nextPosition(Point lastPosition) {
+	  setStone();
 		int x = (int)lastPosition.getX(), y = (int)lastPosition.getY();
 		int cx = (int)currentPosition.getX(), cy = (int)currentPosition.getY();
-		int myStone = (PixelTester.turn == 1?1:2);
-	  int enemyStone = (PixelTester.turn == 1?2:1);
-		Point nextPosition;
+		Point nextPosition = new Point();
 		
 		//if(myStone == 1 && map[2][3] == 0) return new Point(2,3);
 		
@@ -22,7 +35,6 @@ public class PixelPlayer110 extends Player {
     int [][] opMapY = new int[8][8];
     int [][] opMaplD = new int[8][8];
     int [][] opMaprD = new int[8][8];
-    int [][] opMap = new int[8][8]; 
     
     opMapX = horizonSearch(map,myStone);//가로 가중치 부여
     opMapY = verticalSearch(map,myStone);//세로 가중치 부여
@@ -33,17 +45,18 @@ public class PixelPlayer110 extends Player {
 		opMapX = horizonSearch(map,enemyStone);//가로 가중치 부여
     opMapY = verticalSearch(map,enemyStone);//세로 가중치 부여
     opMaplD = lDiagonalSearch(map,enemyStone);//왼쪽위->오른쪽 아래 대각선 가중치 부여
+    System.out.println("110_왼쪽위_상대");
+		print(opMaplD);
     opMaprD = rDiagonalSearch(map,enemyStone);//오른쪽위->왼쪽 아래 대각선 가중치 부여
+    System.out.println("110_오른쪽위_상대");
+		print(opMaprD);
 	  opMap2 = merge(opMapX,opMapY,opMaplD,opMaprD);//4개 가중치 그래프 병합
 	  
 	  opMap = merge2(opMap1,opMap2);
-	  
-	  System.out.println("110_상대테이블");
-		print(opMap2);
-		System.out.println("110_통합테이블");
-		print(opMap);  
-				
-				
+//	  
+//	  System.out.println("110_왼쪽위_상대");
+//		print(opMaplD);
+//				
     int maxX = -1;
     int maxY = -1;
     Point posY = new Point();
@@ -54,7 +67,7 @@ public class PixelPlayer110 extends Player {
 	    if(opMap1[x][i]>=300) return new Point(x,i);
 	    if(opMap1[i][y]>=300) return new Point(i,y);
 	    //놓을 수 있는 위치에 우리 돌 세개가 연결된 게 있으면 착수
-	    if(!isDanger(x,i) && map[x][i] == 0){	  
+	    if(!isDanger(x,i) && map[x][i] == 0){
 	      if(opMap[x][i] > maxY){
 	        maxY = opMap[x][i];
 	        System.out.println("maxY"+maxY);
@@ -72,6 +85,7 @@ public class PixelPlayer110 extends Player {
 	    if(!isDanger(i,y) && map[i][y] == 0){
 	      if(opMap[i][y] > maxX){
 	        maxX = opMap[i][y];
+	        System.out.println("max"+maxX);
 	        posX.setLocation(i,y);
 	      }else if(opMap[i][y] == maxX){ 
 	        if(x == (int)posX.getX()){
@@ -82,21 +96,33 @@ public class PixelPlayer110 extends Player {
 	        } 
 	      }
 	    } 
-	  }
-	  
+	  }  
 	  System.out.println("PosX: ["+posX.getX()+"]["+posX.getY()+"]"+ maxX);
 	  System.out.println("PosY: ["+posY.getX()+"]["+posY.getY()+"]"+ maxY);
 	  if(maxX > maxY) nextPosition = posX;
 	  else if(maxX < maxY) nextPosition = posY;
 	  else{
-	    int randN = (int)(Math.random()*2)+1;
-	    if(randN == 1) nextPosition = posX; 
-	    else nextPosition = posY;
+	    if(maxX == -1 && maxY == -1){ //상대방이 이길 수 있는 위치 밖에 둘 수 없는 경우
+	        System.out.println("random");
+	        for(int i = 0;i<PixelTester.SIZE_OF_BOARD;i++){ //행이나 열 비어있는 곳 아무대나 둠
+	            if(map[x][i] == 0) return new Point(x,i);
+	            if(map[i][y] == 0) return new Point(i,y); 
+	        }
+	    }else{
+	      int randN = (int)(Math.random()*2)+1;
+	      nextPosition = (randN == 1) ? posX : posY;
+	    }
 	  } 
-	  
 	  //System.out.println("(2) ["+nextPosition.getX()+"]["+nextPosition.getY()+"]"); 
-	  return nextPosition;
-	  
+	  return nextPosition;  
+	}
+	public int getBenefit(int x,int y){
+	  int maxB = -500;
+	  for(int i = 0;i<PixelTester.SIZE_OF_BOARD;i++){
+	    if(opMap1[x][i] >= maxB && i!=y) maxB = opMap1[x][i];
+	    if(opMap1[i][y] >= maxB && i!=x) maxB = opMap1[i][y];
+	  }
+	  return maxB;
 	}
 	public boolean isDanger(int x,int y){
 	  boolean danger = false;
@@ -172,7 +198,7 @@ public class PixelPlayer110 extends Player {
 	}
 	
 	//세로가중치
-	public static int[][] verticalSearch(int[][] omap,int myStone){
+	public int[][] verticalSearch(int[][] omap,int myStone){
 	  int w = 100; //가중치
 		int cnt = 0; //붙어있는 돌의 수
 	  int[][] opMapY = new int[PixelTester.SIZE_OF_BOARD][PixelTester.SIZE_OF_BOARD];
@@ -194,7 +220,7 @@ public class PixelPlayer110 extends Player {
           }
           
           // 현재돌의 전 위치를 검사해서
-          if(((j-1)!= -1)){ //맵의 크기를 벗어나지 않고
+          if(((j-1)!=-1)){ //맵의 크기를 벗어나지 않고
              if ((omap[j-1][i] == 0) ){ //돌을 둘 수 있는 위치이면
               opMapY[j-1][i] += (cnt * w);  
             }
@@ -210,7 +236,7 @@ public class PixelPlayer110 extends Player {
 	}
 	
 	//가로가중치
-	public static int[][] horizonSearch(int[][] omap,int myStone){
+	public int[][] horizonSearch(int[][] omap,int myStone){
 	  int w = 100; //가중치
 		int cnt = 0; //붙어있는 돌의 수
 	  int[][] opMapX = new int[PixelTester.SIZE_OF_BOARD][PixelTester.SIZE_OF_BOARD];
@@ -248,7 +274,9 @@ public class PixelPlayer110 extends Player {
     }
     return opMapX;
 	}
-	public static int[][] lDiagonalSearch(int[][] omap,int myStone){
+	public int[][] lDiagonalSearch(int[][] omap,int Stone){
+	  
+      int otherStone = (Stone==myStone)?enemyStone:myStone;
       //System.out.println("왼쪽 위에서 오른쪽 아래로");
       int cnt = 0;
       int weight = 0;
@@ -256,42 +284,40 @@ public class PixelPlayer110 extends Player {
       //왼쪽 위에서 오른쪽 아래로 대각선 탐색
       int[][] cmap = new int[PixelTester.SIZE_OF_BOARD][PixelTester.SIZE_OF_BOARD];
       for(int i = PixelTester.SIZE_OF_BOARD-2;i>=0;i--){
-      //System.out.println("diag: "+i);
-      cnt =0;
-      temp = i;
-      for(int j =0;temp<PixelTester.SIZE_OF_BOARD;temp++,j++){
-        if(omap[temp][j] == myStone){//내돌이 있으면 가중치
-          cnt += 1;
-          //System.out.println("가중치: ["+temp+"]["+j+"]");
+        //System.out.println("diag: "+i);
+        cnt =0;
+        temp = i;
+        for(int j =0;temp<PixelTester.SIZE_OF_BOARD;temp++,j++){
+          if((omap[temp][j] == Stone)&&isLPromising(temp,j,otherStone)){//내돌이 있으면 가중치
+            cnt += 1;
+            //System.out.println("가중치: ["+temp+"]["+j+"]");
+          }else if(omap[temp][j] !=  Stone && cnt != 0){//돌의 연결이 끝나면 가중치부여
+            //System.out.println("최종 가중치 :["+temp+"]["+j+"]");
+            weight = 100*cnt;
+            if(omap[temp][j] == 0) cmap[temp][j] += weight;
+            if(temp-(cnt+1) >= 0 && j-(cnt+1) >= 0 && omap[temp-(cnt+1)][j-(cnt+1)]==0)
+              cmap[temp-(cnt+1)][j-(cnt+1)] += weight; 
+            cnt=0;
+          }
+          if((temp == PixelTester.SIZE_OF_BOARD-1 || (temp == 6 && j == 6)) && cnt != 0){//가중치 부여하기전에 연결이 끝날때
+            //System.out.println("예외상황 가중치: ["+temp+"]["+j+"]");
+            weight = 100*cnt;
+            if(temp-cnt >= 0 && j-cnt >= 0 && omap[temp-cnt][j-cnt]==0)
+              cmap[temp-cnt][j-cnt] += weight; 
+            cnt =0;
+          }     
         }
-        else if(omap[temp][j] !=  myStone && cnt != 0){//돌의 연결이 끝나면 가중치부여
-          //System.out.println("최종 가중치 :["+temp+"]["+j+"]");
-          weight = 100*cnt;
-          if(omap[temp][j] == 0)
-          cmap[temp][j] += weight;
-          if(temp-(cnt+1) >= 0 && j-(cnt+1) >= 0 && omap[temp-(cnt+1)][j-(cnt+1)]==0)
-            cmap[temp-(cnt+1)][j-(cnt+1)] += weight; 
-          cnt=0;
-        }
-        if((temp == PixelTester.SIZE_OF_BOARD-1 || (temp == 6 && j == 6)) && cnt != 0){//가중치 부여하기전에 연결이 끝날때
-          //System.out.println("예외상황 가중치: ["+temp+"]["+j+"]");
-          weight = 100*cnt;
-          if(temp-cnt >= 0 && j-cnt >= 0 && omap[temp-cnt][j-cnt]==0)
-            cmap[temp-cnt][j-cnt] += weight; 
-          cnt =0;
-        }     
       }
-     }
      for(int j=1;j<PixelTester.SIZE_OF_BOARD;j++){
       //System.out.println("diag: "+j);
       cnt =0;
       temp = j;
       for(int i =0;temp<PixelTester.SIZE_OF_BOARD;temp++,i++){
-        if(omap[i][temp] == myStone){//내돌이 있으면 가중치
+        if((omap[i][temp] == Stone)&&isLPromising(i,temp,otherStone)){//내돌이 있으면 가중치
           cnt += 1;
           //System.out.println("가중치: ["+i+"]["+temp+"]");
         }
-        else if(omap[i][temp] != myStone && cnt != 0){//돌의 연결이 끝나면 가중치부여
+        else if(omap[i][temp] != Stone && cnt != 0){//돌의 연결이 끝나면 가중치부여
           //System.out.println("최종 가중치 :["+i+"]["+temp+"]");
           weight = 100*cnt;
           if(omap[i][temp] == 0)
@@ -313,8 +339,9 @@ public class PixelPlayer110 extends Player {
     }
 		
 		//대각선가중치 - 오른쪽 위에서 왼쪽 아래로
-		public static int[][] rDiagonalSearch(int[][] omap,int myStone){
+		public int[][] rDiagonalSearch(int[][] omap,int Stone){
       //System.out.println("오른쪽 위에서 왼쪽 아래로");
+      int otherStone = Stone==myStone?enemyStone:myStone;
       int cnt = 0;
       int weight = 0;
       int temp = 0;
@@ -325,11 +352,11 @@ public class PixelPlayer110 extends Player {
         cnt =0;
         temp = i;
         for(int j =PixelTester.SIZE_OF_BOARD-1;temp<PixelTester.SIZE_OF_BOARD;temp++,j--){
-          if(omap[temp][j] == myStone){//내돌이 있으면 가중치
+          if(omap[temp][j] == Stone &&isRPromising(temp,j,otherStone)){//내돌이 있으면 가중치
             cnt += 1;
             //System.out.println("가중치 시작점: ["+temp+"]["+j+"]");
           }
-          else if(omap[temp][j] != myStone && cnt != 0){//돌의 연결이 끝나면 가중치부여
+          else if(omap[temp][j] != Stone && cnt != 0){//돌의 연결이 끝나면 가중치부여
             //System.out.println("최종 가중치 :["+temp+"]["+j+"]");
             weight = 100*cnt;
             if(omap[temp][j] == 0)
@@ -352,11 +379,11 @@ public class PixelPlayer110 extends Player {
       cnt =0;
       temp = j;
       for(int i =0;temp>=0;temp--,i++){
-        if(omap[i][temp] == myStone){//내돌이 있으면 가중치
+        if((omap[i][temp] == Stone )&&isRPromising(i,temp,otherStone)){//내돌이 있으면 가중치
           cnt += 1;
           //System.out.println("가중치: ["+i+"]["+temp+"]");
         }
-        else if(omap[i][temp] != myStone && cnt != 0){//돌의 연결이 끝나면 가중치부여
+        else if(omap[i][temp] != Stone && cnt != 0){//돌의 연결이 끝나면 가중치부여
           //System.out.println("최종 가중치 :["+i+"]["+temp+"]");
           weight = 100*cnt;
           if(omap[i][temp]==0)
@@ -375,5 +402,43 @@ public class PixelPlayer110 extends Player {
      }
     }
     return cmap;
+  }
+  public boolean isLPromising(int x, int y, int enemy) {
+		int i;
+		int count = 0;
+		
+		for( i = -3; i <= 3; i++ ) {
+			if ( x + i < 0 || y + i < 0 || x + i >= PixelTester.SIZE_OF_BOARD || y + i >= PixelTester.SIZE_OF_BOARD ) {
+				continue;
+			}
+			if ( map[x + i][y + i] != enemy && map[x + i][y + i] != -1 ) {
+				count++;
+				if ( count == 4 ) {
+					return true;
+				}
+			} else {
+				count = 0;
+			}
+		}
+		return false;	
+  }
+  public boolean isRPromising(int x, int y, int enemy) {
+		int i;
+		int count = 0;
+		
+		for( i = -3; i <= 3; i++ ) {
+			if ( x + i < 0 || y - i < 0 || x + i >= PixelTester.SIZE_OF_BOARD || y - i >= PixelTester.SIZE_OF_BOARD ) {
+				continue;
+			}
+			if ( map[x + i][y - i] != enemy && map[x + i][y - i] != -1 ) {
+				count++;
+				if ( count == 4 ) {
+					return true;
+				}
+			} else {
+				count = 0;
+			}
+		}    
+		return false;	
   }
 }
