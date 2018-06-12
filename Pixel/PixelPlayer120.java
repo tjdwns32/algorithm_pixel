@@ -1,19 +1,31 @@
 import java.awt.*;
 import java.util.Random;
 
-public class PixelPlayer110 extends Player {
-	PixelPlayer110(int[][] map) {
+public class PixelPlayer120 extends Player {
+	PixelPlayer120(int[][] map) {
 		super(map);
 	}
+	 static int myStone;
+	 static int enemyStone;
 	
    static int [][] opMap1 = new int[8][8]; 
    static int [][] opMap2 = new int[8][8]; 
+   static int [][] opMap = new int[8][8]; 
+   
+   public void setStone(){//내 돌과 상대 돌 파악 
+    if(PixelTester.turn == 1){
+      myStone = 1;
+      enemyStone = 2;
+    }else{
+      myStone = 2;
+      enemyStone = 1;
+    }
+  }
 
 	public Point nextPosition(Point lastPosition) {  
+	  setStone();
 		int x = (int)lastPosition.getX(), y = (int)lastPosition.getY();
 		int cx = (int)currentPosition.getX(), cy = (int)currentPosition.getY();
-		int myStone = (PixelTester.turn == 1?1:2);
-	  int enemyStone = (PixelTester.turn == 1?2:1);
 		Point nextPosition = new Point();
 		
 		//if(myStone == 1 && map[2][3] == 0) return new Point(2,3);
@@ -335,7 +347,7 @@ public class PixelPlayer110 extends Player {
             //System.out.println("가중치: ["+temp+"]["+j+"]");
           }else if(omap[temp][j] !=  Stone && cnt != 0){//돌의 연결이 끝나면 가중치부여
             //System.out.println("최종 가중치 :["+temp+"]["+j+"]");
-            weight = 100*cnt;
+            weight = 110*cnt;
             if(omap[temp][j] == 0) cmap[temp][j] += weight;
             if(temp-(cnt+1) >= 0 && j-(cnt+1) >= 0 && omap[temp-(cnt+1)][j-(cnt+1)]==0)
               cmap[temp-(cnt+1)][j-(cnt+1)] += weight; 
@@ -343,7 +355,7 @@ public class PixelPlayer110 extends Player {
           }
           if((temp == PixelTester.SIZE_OF_BOARD-1 || (temp == 6 && j == 6)) && cnt != 0){//가중치 부여하기전에 연결이 끝날때
             //System.out.println("예외상황 가중치: ["+temp+"]["+j+"]");
-            weight = 100*cnt;
+            weight = 110*cnt;
             if(temp-cnt >= 0 && j-cnt >= 0 && omap[temp-cnt][j-cnt]==0)
               cmap[temp-cnt][j-cnt] += weight; 
             cnt =0;
@@ -361,7 +373,7 @@ public class PixelPlayer110 extends Player {
         }
         else if(omap[i][temp] != Stone && cnt != 0){//돌의 연결이 끝나면 가중치부여
           //System.out.println("최종 가중치 :["+i+"]["+temp+"]");
-          weight = 100*cnt;
+          weight = 110*cnt;
           if(omap[i][temp] == 0)
             cmap[i][temp] += weight;
           if(i-(cnt+1) >= 0 && temp-(cnt+1) >= 0 && omap[i-(cnt+1)][temp-(cnt+1)]==0)
@@ -370,7 +382,7 @@ public class PixelPlayer110 extends Player {
         }
         if(temp == PixelTester.SIZE_OF_BOARD-1 && cnt != 0){//가중치 부여하기전에 연결이 끝날때
           //System.out.println("예외상황 가중치: ["+i+"]["+temp+"]");
-          weight = 100*cnt;
+          weight = 110*cnt;
           if(temp-cnt >= 0 && i-cnt >= 0 && omap[i-cnt][temp-cnt]==0)
             cmap[i-cnt][temp-cnt] += weight; 
           cnt = 0;
@@ -400,7 +412,7 @@ public class PixelPlayer110 extends Player {
           }
           else if(omap[temp][j] != Stone && cnt != 0){//돌의 연결이 끝나면 가중치부여
             //System.out.println("최종 가중치 :["+temp+"]["+j+"]");
-            weight = 100*cnt;
+            weight = 110*cnt;
             if(omap[temp][j] == 0)
               cmap[temp][j] += weight;
             if(temp-(cnt+1) >= 0 && j+(cnt+1)<PixelTester.SIZE_OF_BOARD && omap[temp-(cnt+1)][j+(cnt+1)]==0)
@@ -409,7 +421,7 @@ public class PixelPlayer110 extends Player {
           }
           if((temp == PixelTester.SIZE_OF_BOARD-1 || (temp == 6 && j == 1)) && cnt != 0){ //N가중치 부여하기전에 연결이 끝날때
             //System.out.println("예외상황 가중치: ["+temp+"]["+j+"]");
-            weight = 100*cnt;
+            weight = 110*cnt;
             if(temp-cnt >= 0 && j+cnt<PixelTester.SIZE_OF_BOARD && omap[temp-cnt][j+cnt]==0)
               cmap[temp-cnt][j+cnt] += weight; 
             cnt =0;
@@ -427,7 +439,7 @@ public class PixelPlayer110 extends Player {
         }
         else if(omap[i][temp] != Stone && cnt != 0){//돌의 연결이 끝나면 가중치부여
           //System.out.println("최종 가중치 :["+i+"]["+temp+"]");
-          weight = 100*cnt;
+          weight = 110*cnt;
           if(omap[i][temp]==0)
             cmap[i][temp] += weight;
             if(i-(cnt+1) >= 0 && temp+(cnt+1)<PixelTester.SIZE_OF_BOARD && omap[i-(cnt+1)][temp+(cnt+1)]==0)
@@ -436,7 +448,7 @@ public class PixelPlayer110 extends Player {
         }
         if(temp == 0 && cnt != 0){//가중치 부여하기전에 연결이 끝날때
           //System.out.println("예외상황 가중치: ["+i+"]["+temp+"]");
-          weight = 100*cnt;
+          weight = 110*cnt;
           if(i-cnt >= 0 && temp+cnt<PixelTester.SIZE_OF_BOARD && omap[i-cnt][temp+cnt]==0)
             cmap[i-cnt][temp+cnt] += weight; 
           cnt = 0;
