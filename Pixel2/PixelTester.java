@@ -33,8 +33,8 @@ public class PixelTester{
 
 		final PixelBoard board = new PixelBoard(map);
 
-		final Player p1 = new PixelPlayer100(map);
-		final Player p2 = new PixelPlayer110(map);
+		final Player p1 = new PixelPlayer110(map);
+		final Player p2 = new PixelPlayer100(map);
 		p1.setCurrentPosition(new Point(4,3));
 		p2.setCurrentPosition(new Point(3,4));
 
@@ -253,7 +253,7 @@ public class PixelTester{
 	}
 
 	// Case 1. All map is occupied
-	// Case 2. If 1 position is remained, we judge omok by next player
+	// Case 2. If 1 position  remained, we judge omok by next player
 	public static boolean isdraw(Point dolPosition) {
 		int x = 0, y = 0, count = 0;
 		for( int i = 0; i < SIZE_OF_BOARD; i++ ) {

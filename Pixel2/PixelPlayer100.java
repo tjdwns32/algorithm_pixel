@@ -1,411 +1,662 @@
 import java.awt.*;
-import java.util.Random;
+
 
 public class PixelPlayer100 extends Player {
 	PixelPlayer100(int[][] map) {
 		super(map);
 	}
+	
+	public Next predict(int a, int b, int myDol) {
+		int yNum = (myDol == 2)? 1 : 2;
+		int preSum;
+		int postSum;
+		int turn = 0;
+		if(map3[a][b] == 0) {
+			map3[a][b] = myDol;
+			turn = 1;
+		}
+		Next[] map5 = new Next[16];
+		int index = 0;
+		for(int i = 0; i < 8; i++) {
+			if(map3[i][b] == 0 && i != a) {
+				preSum = cgrade(yNum);
+				preSum += vgrade(yNum);
+				preSum += dvgrade(yNum);
+				preSum += dcgrade(yNum);
+				map3[i][b] = yNum;
+				postSum = cgrade(yNum);
+				postSum += vgrade(yNum);
+				postSum += dvgrade(yNum);
+				postSum += dcgrade(yNum);
+				map5[index++] = new Next(postSum - preSum, new Point(i, b));
+				map3[i][b] = 0;
+				preSum = 0;
+				postSum = 0;
+			}
+			else{
+				map5[index++] = new Next(-1, new Point(i, b));
+			}
+			if(map3[a][i] == 0 && i != b) {
+				preSum = cgrade(yNum);
+				preSum += vgrade(yNum);
+				preSum += dvgrade(yNum);
+				preSum += dcgrade(yNum);
+				map3[a][i] = yNum;
+				postSum = cgrade(yNum);
+				postSum += vgrade(yNum);
+				postSum += dvgrade(yNum);
+				postSum += dcgrade(yNum);
+				map5[index++] = new Next(postSum - preSum, new Point(a, i));
+				map3[a][i] = 0;
+				preSum = 0;
+				postSum = 0;
+			}
+			else{
+				map5[index++] = new Next(-1, new Point(a, i));
+			}
+		}
+		if(turn == 1) {
+			map3[a][b] = 0;
+		
+		}
+		Narr(map5, 16);
+		
+		return map5[0];
+	}
+	// (a, b)에 놓았다고 가정하고 상대방의 가중치중 가장 큰 점을 반환
 
+	
+	public class Next{
+		public int num;
+		public Point p;
+		boolean id;
+		
+		 public Next() {
+			 num = 0;
+		 }
+		 public Next(int a, Point b){
+			num = a;
+			p = b;
+		}
+		
+	};// 점과 가중치를 한 번에 볼 수 있게 구성한 클래스
+	
+	public void Narr(Next[] arr, int size) {
+		for(int i = 0; i < size - 1; i++) {
+			Next temp = arr[i];
+			for(int j = i + 1; j < size; j++) {
+				if(temp.num < arr[j].num) {
+					arr[i] = arr[j];
+					arr[j] = temp;
+					temp = arr[i];
+				}
+			}
+		}
+	}// NEXT배열을 오름차순으로 정렬
+
+	public int bonus2(int a, int b, int c, int d) {
+		int sum = a * 1000 + b * 100 + c * 10 + d;
+		int result = 0;
+		switch(sum) {
+		case 1111 :
+		case 1110 :
+		case 1101 :
+		case 1011 :
+		case 1010 :
+		case 111 :
+		case 110 :
+		case 101 :
+		case 1112 :
+		case 1012 :
+		case 2111 :
+		case 2110 :
+		case 112 :
+		case 2121 :
+		case 2101 :
+			result = 0;
+			break;
+		case 1100 :
+		case 1001 :
+		case 100 :
+		case 11 :
+		case 10 :
+		case 2100 :
+		case 12 :
+			result = 1;
+			break;
+		case 1000 :
+		case 1 :
+			result = 2;
+			break;
+		case 0 :
+			result = 3;
+			break;
+		case 1102 :
+		case 1002 :
+		case 102 :
+		case 2102 :
+		case 2011 :
+		case 2010 :
+		case 2012 :
+		case 2001 :
+			result = 10;
+			break;
+		case 2000 :
+		case 2 :
+			result = 15;
+			break;
+		case 2002 :
+			result = 1000;
+			break;
+			
+		}
+		return result;
+	}
+	public int bonus3 (int a, int b) {
+		int sum = a * 10 + b;
+		int result = 0;
+		switch(sum) {
+		case 0 :
+			result = 1000;
+			break;
+		case 10 :
+		case 1 :
+			result = 15;
+			break;
+		case 11 :
+			result = 0;
+			break;
+		}
+		return result;
+	}
+
+	public int area(int x, int y, int myDol) {
+		if(x == 0 && y == 0) return 1;
+		else if(x == 7 && y == 0) return 1;
+		else if(x == 0 && y == 7) return 1;
+		else if(x == 7 && y == 7) return 1;
+		else if(x >= 0 && x < 8 ) {
+			if ( y >= 0 && y < 8) {
+				if(myDol == 1) {
+					if(map3[x][y] == 2) return 1;
+					else if(map3[x][y] == 1) return 2;
+					else return 0;
+				}
+				else return map3[x][y];
+			}
+			else return 1;
+		}
+		else return  1;
+	}
+	
+	public int vgrade(int myDol) {
+		int count = 0;
+		int grade = 0;
+		for(int i = 0; i < 8; i++) {
+			for(int j = 0; j < 8; j++) {
+				int k;
+				if(map3[i][j] == myDol) {
+					for(k = j; k < 8; k++) {
+						if(map3[i][k] == myDol) {
+							count++;
+						}
+					
+						else {
+							
+							break;
+						}
+					
+					}
+					if(count == 2) {
+						grade += bonus2(area(i,j - 2, myDol), area(i,j - 1, myDol),area(i,j + 2, myDol), area(i,j + 3, myDol));
+					}
+					else if(count == 3) {
+						grade += bonus3(area(i, j - 1, myDol), area(i, j + 3, myDol));
+					}
+					else if(count >= 4) {
+						grade += 10000;
+					}
+					j = k;
+					count = 0;
+				}
+			}
+		
+		}
+
+
+
+		
+		
+		return grade;
+	}
+	
+	
+	public int cgrade(int myDol) {
+		int count = 0;
+		int grade = 0;
+		for(int j = 0; j < 8; j++) {
+			int k;
+			for(int i = 0; i < 8; i++) {
+				if(map3[i][j] == myDol) {
+					for(k = i; k < 8; k++) {
+						if(map3[k][j] ==myDol) {
+							count++;
+						}
+						else {
+							break;
+						}
+					
+					}
+					if(count == 2) {
+						grade += bonus2(area(i - 2,j, myDol), area(i - 1,j, myDol), area(i + 2,j, myDol), area(i + 3,j, myDol));
+					}
+					else if(count == 3) {
+						grade += bonus3(area(i - 1, j, myDol), area(i + 3, j, myDol));
+					}
+					else if(count >= 4) {
+						grade += 10000;
+					}
+					i = k;
+					count = 0;
+				}
+			}
+		
+		}
+		
+		
+		return grade;
+	}
+	
+	public int dvgrade(int myDol) {
+		int count = 0;
+		int grade = 0;
+		for(int d = 0; d < 8; d++) {
+			for(int i = -3 + d; i < 5 + d; i++) {
+				int j = i - d + 3;
+				int k;
+				if(i >=  0 && i < 8 && map3[i][j] == myDol) {
+					for(k = 0; k < 8 - j; k++) {
+						if(i < 8 - k) {
+							if(map3[i + k][j + k] == myDol) {
+								count++;
+							}
+					
+							else {
+							
+								break;
+							}
+						}
+					
+					}
+					if(count == 2) {
+						grade += bonus2(area(i - 2,j - 2, myDol), area(i - 1,j - 1, myDol),area(i + 2,j + 2, myDol), area(i + 3,j + 3, myDol));
+					}
+					else if(count == 3) {
+						grade += bonus3(area(i - 1, j - 1, myDol), area(i + 3, j + 3, myDol));
+					}
+					else if(count >= 4) {
+						grade += 10000;
+					}
+					i = i + k;
+					count = 0;
+				}
+			}
+		
+		}
+
+
+
+		
+		
+		return grade;
+	}
+	public int dcgrade(int myDol) {
+		int count = 0;
+		int grade = 0;
+		for(int d = 0; d < 8; d++) {
+			for(int i = -3 + d; i < 5 + d; i++) {
+				int j = 4 + d - i;
+				int k;
+				if(i >=  0 && i < 8 && map3[i][j] == myDol) {
+					for(k = 0; k < j; k++) {
+						if(i < 8 - k) {
+							if(map3[i + k][j - k] == myDol) {
+								count++;
+							}
+					
+							else {
+							
+								break;
+							}
+						}
+					
+					}
+					if(count == 2) {
+						grade += bonus2(area(i - 2,j + 2, myDol), area(i - 1,j + 1, myDol),area(i + 2,j - 2, myDol), area(i + 3,j - 3, myDol));
+					}
+					else if(count == 3) {
+						grade += bonus3(area(i - 1, j + 1, myDol), area(i + 3, j - 3, myDol));
+					}
+					else if(count >= 4) {
+						grade += 10000;
+					}
+					i = i + k;
+					count = 0;
+				}
+			}
+		
+		}
+
+
+
+		
+		
+		return grade;
+	}
+	
+	
+	public void grade_mapping(int[][] m, int myDol) {
+		int preSum;
+		int postSum;
+		for(int i = 0; i < 8; i++) {
+			for(int j = 0; j < 8; j++) {
+				if(map3[i][j] == 0) {
+					preSum = cgrade(myDol);
+					preSum += vgrade(myDol);
+					preSum += dvgrade(myDol);
+					preSum += dcgrade(myDol);
+					map3[i][j] = myDol;
+					postSum = cgrade(myDol);
+					postSum += vgrade(myDol);
+					postSum += dvgrade(myDol);
+					postSum += dcgrade(myDol);
+					m[i][j] =  postSum - preSum; // 가중치의 추가분
+					map3[i][j] = 0;
+				}
+				else {
+					m[i][j] = -3; // 놓을 수 없다.
+				}
+			}
+		}
+		
+	}
+	
+	int[][] map3 = new int[8][8];
 	public Point nextPosition(Point lastPosition) {  
 		int x = (int)lastPosition.getX(), y = (int)lastPosition.getY();
-		int cx = (int)currentPosition.getX(), cy = (int)currentPosition.getY();
-		int myStone = (PixelTester.turn == 1?1:2);
-	  int enemyStone = (PixelTester.turn == 1?2:1);
-		Point nextPosition;
+		int find = 0;
+		Point nextPosition = new Point(x + 1, y);
+		int myNum = map[(int)currentPosition.getX()][(int)currentPosition.getY()];
+		int yNum = (myNum == 2)? 1 : 2;
 		
-		int [][] opMapX = new int[8][8]; 
-    int [][] opMapY = new int[8][8];
-    int [][] opMaplD = new int[8][8];
-    int [][] opMaprD = new int[8][8];
-    int [][] opMap = new int[8][8]; 
-    int [][] opMap2 = new int[8][8]; 
-    
-    
-    
-    opMapX = horizonSearch(map,myStone);//가로 가중치 부여
-    opMapY = verticalSearch(map,myStone);//세로 가중치 부여
-    opMaplD = lDiagonalSearch(map,myStone);//왼쪽위->오른쪽 아래 대각선 가중치 부여
-    opMaprD = rDiagonalSearch(map,myStone);//오른쪽위->왼쪽 아래 대각선 가중치 부여
-    opMap = merge(opMapX,opMapY,opMaplD,opMaprD);//4개 가중치 그래프 병합
 		
-		opMapX = horizonSearch(map,enemyStone);//가로 가중치 부여
-    opMapY = verticalSearch(map,enemyStone);//세로 가중치 부여
-    opMaplD = lDiagonalSearch(map,enemyStone);//왼쪽위->오른쪽 아래 대각선 가중치 부여
-    opMaprD = rDiagonalSearch(map,enemyStone);//오른쪽위->왼쪽 아래 대각선 가중치 부여
-	  opMap2 = merge(opMapX,opMapY,opMaplD,opMaprD);//4개 가중치 그래프 병합
-	  
-	  opMap = merge2(opMap,opMap2);
-	  
-	  for(int i = 0;i<PixelTester.SIZE_OF_BOARD;i++){
-      for(int j = 0;j<PixelTester.SIZE_OF_BOARD;j++){
-        if(map[i][j] != 0)
-          opMap[i][j] = map[i][j];
-      }
-    }
-	  
-	  System.out.println("p2 : 병합테이블");
-		print(opMap); 
+		
+		for(int i = 0; i < 8; i++) {
+			for(int j = 0; j < 8; j++) {
+				map3[i][j] = map[i][j];
+			}
+		}
+		//map3 복사
+		
+		int[][] map2 = new int[8][8];
+		grade_mapping(map2, myNum);
+		// 나의 가중치
+		
+		
+	
+		int[][]map4 = new int[8][8];
+		grade_mapping(map4, yNum);
+		// 상대방 가중치 맵
+		
+		Next[] NA = new Next[16];
+		// 자신이 놓을 수  곳을 넣을 배열
+		int index = 0;
+		for(int i = 0; i < 8; i ++) {
+			NA[index] = new Next(map2[i][y], new Point(i, y));
+			index++;
+			NA[index] = new Next(map2[x][i], new Point(x, i));
+			index++;
+			
+		}
+		// 배열에 자신이 놓을 수 있는 점의 가중치와 좌표를 저장
+		index = 0;
+		
+		
+		
+		Next[] NA2 = new Next[16];
+		// 자신이 놓을 수  곳을 넣을 배열2
+		for(int i = 0; i < 8; i ++) {
+			NA2[index] = new Next(map4[i][y], new Point(i, y));
+			index++;
+			NA2[index] = new Next(map4[x][i], new Point(x, i));
+			index++;
+		}
+		// 상대방 가중치 기준
+		index = 0;
+		
+		
+		int post; // 우선순위 기준
+		int find2 = 0;
+		for(int i = 0; i< 4; i++) { // 우선순위 -> 우선순위에 배열안의 점이 있는지
+			post = i;
+			for(int j = 0; j < 16; j++) { // 위에있는 배열을 검사
+				if(post == 0) {
+					if(NA[j].num >= 8000) { //8000이상은 끝낼 수 있는 점 -> 내가 끝낼 수 있는 점을 확인
+						nextPosition = NA[j].p;
+						find2 = 1;
+						break;
+					}
 				
-				
-    int maxX = 0;
-    int maxY = 0;
-    Point posY = new Point();
-    Point posX = new Point();
-	  System.out.println("lastPosition: ["+x+"]["+y+"]");
-	  
-	  for(int i = 0;i<PixelTester.SIZE_OF_BOARD;i++){
-	    if(opMap[x][i] > maxY && map[x][i] == 0){
-	       maxY = opMap[x][i];
-	       posY.setLocation(x,i);
-	    }else if(opMap[x][i] == maxY && map[x][i] == 0){
-	      if(Math.abs(y-(int)posY.getY()) > Math.abs(y-i))
-	        posY.setLocation(x,i);
-	    }
-	    if(opMap[i][y] > maxX && map[i][y] == 0){
-	       maxX = opMap[i][y];
-	       posX.setLocation(i,y);
-	    }else if(opMap[i][y] == maxX && map[i][y] == 0){
-	      if(Math.abs(x-(int)posX.getX()) > Math.abs(x-i))
-	        posX.setLocation(i,y);
-	    } 
-	  }
-	  if(maxX > maxY) nextPosition = posX;
-	  else if(maxX < maxY) nextPosition = posY;
-	  else{
-	    int randN = (int)(Math.random()*2)+1;
-	    if(randN == 1) nextPosition = posX; 
-	    else nextPosition = posY;
-	  } 
-	  return nextPosition;
-	  
-//		for(int i = 0; i < PixelTester.SIZE_OF_BOARD; i++){//상대방 돌 위치에서 세로를 검사
-//		  if(map[i][cy] == 0){ //돌을 둘 수 있는 위치이면
-//		    //세로축에서 최대 가중치 값을 찾음
-//				if(opMap[i][cy] > maxX){ 
-//				  maxX = opMap[i][cy];
-//					posX = i;
-//				}
-//				else if(opMap[i][cy] == maxX){ //가중치가 같으면
-//				  if(Math.abs(cy-i) < Math.abs(cy-posX))
-//					  posX = i;
-//					//System.out.println(posX);
-//				}
-//			}
-//		}
-//		System.out.println("--세로축검사--");
-//		System.out.println("maxX : "+maxX);
-//		System.out.println("posX : "+posX);
-//					
-//		for(int i = 0; i < PixelTester.SIZE_OF_BOARD; i++){//상대방 돌 위치에서 가로를 검사
-//		  if(map[x][i] == 0){ //돌을 둘 수 있는 위치이면  
-//		    //가로축에서 최대 가중치 값을 찾음
-//				if(opMap[cx][i] > maxY){ 
-//				  maxY = opMap[cx][i];
-//					posY = i;
-//				}
-//				else if (opMap[cx][i] == maxY){ //가중치가 같으면
-//				  if(Math.abs(cy-i) < Math.abs(cy-posY))
-//					  posY = i;
-//					System.out.println(posY);
-//				}
-//			}
-//		}
-//					
-//		System.out.println("--가로축검사--");
-//		System.out.println("maxY : "+maxY);
-//		System.out.println("posY : "+posY);
-//		if(maxX > maxY){
-//		  nextPosition = new Point(posX, cy);
-//		  System.out.println(nextPosition);
-//		  return nextPosition;
-//		}
-//		else if(maxX < maxY){  
-//		  nextPosition = new Point(cx, posY);
-//		  System.out.println(nextPosition);
-//		  return nextPosition;
-//		}
-//		else{
-//		   if(Math.abs(cy-posY) >= Math.abs(cx-posX)){
-//		     nextPosition = new Point(posX, cy);
-//		     System.out.println(nextPosition);
-//		     return nextPosition;
-//			 }
-//			 else if(Math.abs(cy-posX) < Math.abs(cx-posY)){
-//			   nextPosition = new Point(cx, posY);
-//			   System.out.println(nextPosition);
-//			   return nextPosition;
-//			 }
-//		}  
-
-//		nextPosition = new Point(x, y);
-//		return nextPosition;
-	}
-	
-	//맵 출력 함수
-	public static void print(int[][] map){
-    for(int i = 0; i < 8; i++){
-      for(int j = 0; j < 8; j++){
-        System.out.print(map[i][j] + "\t ");
-      }
-      System.out.println();
-      System.out.println();
-    }
-	}
-	
-	//가중치 맵 merge함수
-	public static int[][] merge(int hMap[][], int vMap[][], int lDMap[][], int rDMap[][]){
-	  int[][] opMap = new int[8][8];
-	  int maxW = 0;
-	  
-	  for(int i = 0; i < 8; i++){
-      for(int j = 0; j < 8; j++){
-        maxW = Math.max(hMap[i][j], vMap[i][j]);
-        maxW = Math.max(maxW, lDMap[i][j]);
-        maxW = Math.max(maxW, rDMap[i][j]);
-        
-        opMap[i][j] = opMap[i][j] + maxW;
-        if(hMap[i][j] == maxW){
-          opMap[i][j] = opMap[i][j] + ( (vMap[i][j])/10 ) + ( (lDMap[i][j])/10 ) + ( (rDMap[i][j])/10 );
-        }
-        else if(vMap[i][j] == maxW){
-          opMap[i][j] = opMap[i][j] + ( (hMap[i][j])/10 ) + ( (lDMap[i][j])/10 ) + ( (rDMap[i][j])/10 );
-        }
-        else if(lDMap[i][j] == maxW){
-          opMap[i][j] = opMap[i][j] + ( (vMap[i][j])/10 ) + ( (hMap[i][j])/10 ) + ( (rDMap[i][j])/10 );
-        }
-        else if(rDMap[i][j] == maxW){ 
-          opMap[i][j] = opMap[i][j] + ( (vMap[i][j])/10 ) + ( (hMap[i][j])/10 ) + ( (lDMap[i][j])/10 ); 
-        }
-      }
-    }
-	  
-	  return opMap;
-	}
-	
-	public static int[][] merge2(int opMap1[][], int opMap2[][]){
-	  int[][] opMap = new int[8][8];
-	  int maxW = 0;
-	  
-	  for(int i = 0; i < 8; i++){
-      for(int j = 0; j < 8; j++){
-        maxW = Math.max(opMap1[i][j], opMap2[i][j]);
-        
-        opMap[i][j] = opMap[i][j] + maxW;
-        if(opMap1[i][j] == maxW){
-          opMap[i][j] = opMap[i][j] + ( (opMap2[i][j])/10 );
-        }else{
-          opMap[i][j] = opMap[i][j] + ( (opMap1[i][j])/10 );
-        }
-      }
-    }
-	  return opMap;
-	}
-	
-	//세로가중치
-	public static int[][] verticalSearch(int[][] omap,int myStone){
-	  int w = 100; //가중치
-		int cnt = 0; //붙어있는 돌의 수
-	  int[][] opMapY = new int[PixelTester.SIZE_OF_BOARD][PixelTester.SIZE_OF_BOARD];
-	  
-	  for(int i = 0; i < 8; i++){
-      for(int j = 0; j < 8; j++){
-        if(omap[j][i] == myStone){ //현재 돌의 위치를 찾으면
-          cnt++; //돌의 수를 증가       
-          while(true){ //붙어있는 돌을 확인
-            if((j+cnt) < 8){ //맵의 크기를 벗어나지 않는 선에서
-              if(omap[j+cnt][i] == myStone) //붙어있는 돌이 존재하면 카운트하고
-                ++cnt;
-              else if(omap[j+cnt][i] == 0){ //돌을 둘수있는 위치이면 세로가중치 맵을 검사
-                opMapY[j+cnt][i] += (cnt * w);
-                break;
-              }
-              else break; //돌을 둘 수 있는 자리가 아닌경우 종료
-            }else break; //맵크기를 벗어나면 종료
-          }
-          
-          // 현재돌의 전 위치를 검사해서
-          if(((j-1)!= -1)){ //맵의 크기를 벗어나지 않고
-             if ((omap[j-1][i] == 0) ){ //돌을 둘 수 있는 위치이면
-              opMapY[j-1][i] += (cnt * w);  
-            }
-          }
-          
-          //붙어있는 돌의 수 만큼 이미 맵을 검사했으므로 건너뜀
-          if((j+cnt)<8) j+=cnt;
-          cnt = 0;
-       }
-      }
-    }
-    return opMapY;
-	}
-	
-	//가로가중치
-	public static int[][] horizonSearch(int[][] omap,int myStone){
-	  int w = 100; //가중치
-		int cnt = 0; //붙어있는 돌의 수
-	  int[][] opMapX = new int[PixelTester.SIZE_OF_BOARD][PixelTester.SIZE_OF_BOARD];
-	  
-	  for(int i = 0; i < 8; i++){
-      for(int j = 0; j < 8; j++){
-        if(omap[i][j] == myStone){ //현재 돌의 위치를 찾으면
-          cnt++; //돌의 수를 증가
-          
-          while(true){ //붙어있는 돌을 확인
-            if((j+cnt) < 8){ //맵의 크기를 벗어나지 않는 선에서
-              if(omap[i][j+cnt] == myStone){ //붙어있는 돌이 존재하면 카운트하
-                System.out.println("["+i+"]["+(j+cnt)+"]"); 
-              if(omap[i][j+cnt] == myStone) //붙어있는 돌이 존재하면 카운트하고
-                ++cnt;
-              }
-              else if(omap[i][j+cnt] == 0){ //돌을 둘수있는 위치이면 가로가중치 맵을 검사
-                opMapX[i][j+cnt] += (cnt * w);
-                break;
-              }
-              else break; //돌을 둘 수 있는 자리가 아닌경우 종료
-            }else break; //맵크기를 벗어나면 종료
-          }
-          
-          // 현재돌의 전 위치를 검사해서
-          if(((j-1)!= -1)){ //맵의 크기를 벗어나지 않고
-             if ((omap[i][j-1] == 0) ){ //돌을 둘 수 있는 위치이면
-              opMapX[i][j-1] += (cnt * w);  
-            }
-          }
-          
-          //붙어있는 돌의 수 만큼 이미 맵을 검사했으므로 건너뜀
-          if((j+cnt)<8) j+=cnt;
-          cnt = 0;
-       }
-      }
-    }
-    return opMapX;
-	}
-	public static int[][] lDiagonalSearch(int[][] omap,int myStone){
-      //System.out.println("왼쪽 위에서 오른쪽 아래로");
-      int cnt = 0;
-      int weight = 0;
-      int temp = 0;
-      //왼쪽 위에서 오른쪽 아래로 대각선 탐색
-      int[][] cmap = new int[PixelTester.SIZE_OF_BOARD][PixelTester.SIZE_OF_BOARD];
-      for(int i = PixelTester.SIZE_OF_BOARD-2;i>=0;i--){
-      //System.out.println("diag: "+i);
-      cnt =0;
-      temp = i;
-      for(int j =0;temp<PixelTester.SIZE_OF_BOARD;temp++,j++){
-        if(omap[temp][j] == myStone){//내돌이 있으면 가중치
-          cnt += 1;
-          //System.out.println("가중치: ["+temp+"]["+j+"]");
-        }
-        else if(omap[temp][j] !=  myStone && cnt != 0){//돌의 연결이 끝나면 가중치부여
-          //System.out.println("최종 가중치 :["+temp+"]["+j+"]");
-          weight = 100*cnt;
-          if(omap[temp][j] == 0)
-          cmap[temp][j] += weight;
-          if(temp-(cnt+1) >= 0 && j-(cnt+1) >= 0 && omap[temp-(cnt+1)][j-(cnt+1)]==0)
-            cmap[temp-(cnt+1)][j-(cnt+1)] += weight; 
-          cnt=0;
-        }
-        if((temp == PixelTester.SIZE_OF_BOARD-1 || (temp == 6 && j == 6)) && cnt != 0){//가중치 부여하기전에 연결이 끝날때
-          //System.out.println("예외상황 가중치: ["+temp+"]["+j+"]");
-          weight = 100*cnt;
-          if(temp-cnt >= 0 && j-cnt >= 0 && omap[temp-cnt][j-cnt]==0)
-            cmap[temp-cnt][j-cnt] += weight; 
-          cnt =0;
-        }     
-      }
-     }
-     for(int j=1;j<PixelTester.SIZE_OF_BOARD;j++){
-      //System.out.println("diag: "+j);
-      cnt =0;
-      temp = j;
-      for(int i =0;temp<PixelTester.SIZE_OF_BOARD;temp++,i++){
-        if(omap[i][temp] == myStone){//내돌이 있으면 가중치
-          cnt += 1;
-          //System.out.println("가중치: ["+i+"]["+temp+"]");
-        }
-        else if(omap[i][temp] != myStone && cnt != 0){//돌의 연결이 끝나면 가중치부여
-          //System.out.println("최종 가중치 :["+i+"]["+temp+"]");
-          weight = 100*cnt;
-          if(omap[i][temp] == 0)
-            cmap[i][temp] += weight;
-          if(i-(cnt+1) >= 0 && temp-(cnt+1) >= 0 && omap[i-(cnt+1)][temp-(cnt+1)]==0)
-            cmap[i-(cnt+1)][temp-(cnt+1)] += weight; 
-          cnt=0;
-        }
-        if(temp == PixelTester.SIZE_OF_BOARD-1 && cnt != 0){//가중치 부여하기전에 연결이 끝날때
-          //System.out.println("예외상황 가중치: ["+i+"]["+temp+"]");
-          weight = 100*cnt;
-          if(temp-cnt >= 0 && i-cnt >= 0 && omap[i-cnt][temp-cnt]==0)
-            cmap[i-cnt][temp-cnt] += weight; 
-          cnt = 0;
-        }     
-      }
-     }
-     return cmap;  
-    }
+				}
+				else if(post == 1) {
+					if( predict(NA2[j].p.x, NA2[j].p.y, myNum).num <= 8000 ) { // 내가 NA2[j]점에 놓았을 때 적이 끝낼 수 있는 점이 없다.
+						if(NA2[j].num >= 8000) {// NA2[j]점이 적이 끝내는 점이냐?
+							nextPosition = NA2[j].p;
+							find2 = 1;
+							break;
+						}
+					}// 
+					else {
+						if(NA2[j].num >= -1)
+						NA2[j].num = -1;// 이 점에 놓은면 게임이 끝나기 때문에 놓으면 않된다는 것을 알려줌
+					}
+				}
+				else if(post == 2) {
+					if( predict(NA[j].p.x, NA[j].p.y, myNum).num <= 8000) {
+						if(predict(NA2[j].p.x, NA2[j].p.y, yNum).num <= 8000) {
+							if(NA[j].num >= 800) {
+								nextPosition = NA[j].p;
+								find2 = 1;
+								break;
+							}
+						}
+						else {
+							if(NA[j].num >= -1)
+								NA[j].num = -1;
+						}
+					}
+					else {
+						if(NA[j].num >= -2)
+							NA[j].num = -2;
+					}
+				}
+				else if(post == 3) {
+					if( predict(NA2[j].p.x, NA2[j].p.y, myNum).num <= 8000 ) {
+						if(predict(NA2[j].p.x, NA2[j].p.y, yNum).num <= 8000) {
+							if(NA2[j].num >= 800) {
+								nextPosition = NA2[j].p;
+								find2 = 1;
+								break;
+							}
+						}
+						else {
+							if(NA2[j].num >= -1)
+								NA2[j].num = -1;
+						}
+					}
+					else {
+						if(NA2[j].num >= -2)
+							NA2[j].num = -2;
+					}
+				}
+			}
+			if(find2 == 1) {
+				break;
+			}
+			
+		}
+	//--------------------------------------------------------------------------> 점에 4가지 우선 순위를 정하는거	
 		
-		//대각선가중치 - 오른쪽 위에서 왼쪽 아래로
-		public static int[][] rDiagonalSearch(int[][] omap,int myStone){
-      //System.out.println("오른쪽 위에서 왼쪽 아래로");
-      int cnt = 0;
-      int weight = 0;
-      int temp = 0;
-      int[][] cmap = new int[PixelTester.SIZE_OF_BOARD][PixelTester.SIZE_OF_BOARD];
-      //오른쪽 위에서 왼쪽아래로 대각선 탐색
-      for(int i = PixelTester.SIZE_OF_BOARD-2;i>=0;i--) {
-        //System.out.println("diag: "+i);
-        cnt =0;
-        temp = i;
-        for(int j =PixelTester.SIZE_OF_BOARD-1;temp<PixelTester.SIZE_OF_BOARD;temp++,j--){
-          if(omap[temp][j] == myStone){//내돌이 있으면 가중치
-            cnt += 1;
-            //System.out.println("가중치 시작점: ["+temp+"]["+j+"]");
-          }
-          else if(omap[temp][j] != myStone && cnt != 0){//돌의 연결이 끝나면 가중치부여
-            //System.out.println("최종 가중치 :["+temp+"]["+j+"]");
-            weight = 100*cnt;
-            if(omap[temp][j] == 0)
-              cmap[temp][j] += weight;
-            if(temp-(cnt+1) >= 0 && j+(cnt+1)<PixelTester.SIZE_OF_BOARD && omap[temp-(cnt+1)][j+(cnt+1)]==0)
-              cmap[temp-(cnt+1)][j+(cnt+1)] += weight; 
-            cnt=0;
-          }
-          if((temp == PixelTester.SIZE_OF_BOARD-1 || (temp == 6 && j == 1)) && cnt != 0){ //N가중치 부여하기전에 연결이 끝날때
-            //System.out.println("예외상황 가중치: ["+temp+"]["+j+"]");
-            weight = 100*cnt;
-            if(temp-cnt >= 0 && j+cnt<PixelTester.SIZE_OF_BOARD && omap[temp-cnt][j+cnt]==0)
-              cmap[temp-cnt][j+cnt] += weight; 
-            cnt =0;
-          }     
-       }
-     }
-    for(int j= 1;j<PixelTester.SIZE_OF_BOARD-1;j++) {
-      //System.out.println("diag: "+j);
-      cnt =0;
-      temp = j;
-      for(int i =0;temp>=0;temp--,i++){
-        if(omap[i][temp] == myStone){//내돌이 있으면 가중치
-          cnt += 1;
-          //System.out.println("가중치: ["+i+"]["+temp+"]");
-        }
-        else if(omap[i][temp] != myStone && cnt != 0){//돌의 연결이 끝나면 가중치부여
-          //System.out.println("최종 가중치 :["+i+"]["+temp+"]");
-          weight = 100*cnt;
-          if(omap[i][temp]==0)
-            cmap[i][temp] += weight;
-            if(i-(cnt+1) >= 0 && temp+(cnt+1)<PixelTester.SIZE_OF_BOARD && omap[i-(cnt+1)][temp+(cnt+1)]==0)
-              cmap[i-(cnt+1)][temp+(cnt+1)] += weight; 
-              cnt=0;
-        }
-        if(temp == 0 && cnt != 0){//가중치 부여하기전에 연결이 끝날때
-          //System.out.println("예외상황 가중치: ["+i+"]["+temp+"]");
-          weight = 100*cnt;
-          if(i-cnt >= 0 && temp+cnt<PixelTester.SIZE_OF_BOARD && omap[i-cnt][temp+cnt]==0)
-            cmap[i-cnt][temp+cnt] += weight; 
-          cnt = 0;
-        }     
-     }
-    }
-    return cmap;
-  }
+		
+		if(find2 == 0) {
+			System.out.print("find = 0;        ");
+			Next temp = new Next();
+			Next temp2 = new Next();
+			Narr(NA, 16);
+			Narr(NA2, 16);
+			
+			for(int j = 0; j < 2; j++){
+				if(j == 0){// 내가 NA[i]에 놓았다고 가정하고 
+					for(int i = 0; i < 16; i++){
+						if(NA[i].num >= 0){
+							temp = predict(NA[i].p.x,NA[i].p.y, myNum);
+							if(temp.num >= 800){
+								map3[NA[i].p.x][NA[i].p.y] = myNum;
+								map3[temp.p.x][temp.p.y] = yNum;
+								for(int k = 0; k < 8; k++){
+									if(map3[temp.p.x][k] == 0){
+										if(predict(temp.p.x, k, yNum).num >= 8000) {
+											nextPosition = new Point(NA[i].p.x, NA[i].p.y);
+											find = 1;
+											break;}
+									}
+									if(map3[k][temp.p.y] == 0) {
+										if(predict(k, temp.p.y, yNum).num >= 8000) {
+											nextPosition = new Point(NA[i].p.x, NA[i].p.y);
+											find = 1;
+											break;
+										}
+									}
+								}
+								map3[NA[i].p.x][NA[i].p.y] = 0;
+								map3[temp.p.x][temp.p.y] = 0;
+							}
+						}
+						if(NA2[i].num >= 0) {
+							temp2 = predict(NA2[i].p.x,NA2[i].p.y, myNum);
+							if(temp2.num >= 800){
+								map3[NA2[i].p.x][NA2[i].p.y] = myNum;
+								map3[temp2.p.x][temp2.p.y] = yNum;
+								for(int k = 0; k < 8; k++){
+									if(map3[temp2.p.x][k] == 0){
+										if(predict(temp2.p.x, k, yNum).num >= 8000) {
+											nextPosition = new Point(NA2[i].p.x, NA2[i].p.y);
+										
+										find = 1;
+										break;
+										}
+									}
+									if(map3[k][temp2.p.y] == 0) {
+										
+										if(predict(k, temp2.p.y, yNum).num >= 8000) {
+											nextPosition = new Point(NA2[i].p.x, NA2[i].p.y);
+										find = 1;
+										break;
+										}
+									}
+								}
+								map3[NA2[i].p.x][NA2[i].p.y] = 0;
+								map3[temp2.p.x][temp2.p.y] = 0;
+							}
+						}
+						if(find == 1) break;
+					}
+				}
+				else{// 적에서 이 놓은 것보다 나중에 내가 놓을 곳이 더 좋을 때 그리고 적은 8000보다 적어야 한다.
+					System.out.print("else 적은 것;        ");
+					for(int i = 0; i < 16; i++){
+						if(NA[i].num >= 0){
+							temp = predict(NA[i].p.x,NA[i].p.y, myNum);
+							if (temp.num == 0) continue;
+							map3[NA[i].p.x][NA[i].p.y] = myNum;
+							map3[temp.p.x][temp.p.y] = yNum;
+							for(int k = 0; k < 8; k++){
+								if(map3[temp.p.x][k] == 0){
+									Next temp5 = predict(temp.p.x, k, yNum);
+									if(temp5.p.x != NA[i].p.x && temp5.p.y != NA[i].p.y && temp5.num >= 4 && temp5.num > temp.num) {
+										if(predict(temp5.p.x, temp5.p.y, myNum).num <= 8000 && predict(temp5.p.x, temp5.p.y, yNum).num <= 8000) {
+									nextPosition = new Point(NA[i].p.x, NA[i].p.y);
+									find = 1;
+									break;}}
+								}
+								if(map3[k][temp.p.y] == 0) {
+									Next temp5 = predict(k,temp.p.y, yNum);
+									if(temp5.p.x != NA[i].p.x && temp5.p.y != NA[i].p.y && temp5.num >= 4 && temp5.num > temp.num) {
+										if(predict(temp5.p.x, temp5.p.y, myNum).num <= 8000 && predict(temp5.p.x, temp5.p.y, yNum).num <= 8000) {
+										nextPosition = new Point(NA[i].p.x, NA[i].p.y);
+									find = 1;
+									break;}}
+								}
+							}
+							map3[NA[i].p.x][NA[i].p.y] = 0;
+							map3[temp.p.x][temp.p.y] = 0;
+							
+						}
+						if(NA2[i].num >= 0) {
+							temp2 = predict(NA2[i].p.x,NA2[i].p.y, myNum);
+							if (temp2.num == 0) continue;
+							map3[NA2[i].p.x][NA2[i].p.y] = myNum;
+							map3[temp2.p.x][temp2.p.y] = yNum;
+							for(int k = 0; k < 8; k++){
+								if(map3[temp2.p.x][k] == 0){
+									Next temp5 = predict(temp2.p.x, k, yNum);
+									if(temp5.p.x != NA2[i].p.x && temp5.p.y != NA2[i].p.y && temp5.num >= 4 && temp5.num > temp.num) {
+										if(predict(temp5.p.x, temp5.p.y, myNum).num <= 8000 && predict(temp5.p.x, temp5.p.y, yNum).num <= 8000) {
+											nextPosition = new Point(NA2[i].p.x, NA2[i].p.y);
+											find = 1;
+											break;}
+										}
+								}
+								if(map3[k][temp2.p.y] == 0) {
+									Next temp5 = predict(k, temp2.p.y, yNum);
+									if(temp5.p.x != NA2[i].p.x && temp5.p.y != NA2[i].p.y && temp5.num >= 4 && temp5.num > temp.num) {
+										if(predict(temp5.p.x, temp5.p.y, myNum).num <= 8000 && predict(temp5.p.x, temp5.p.y, myNum).num <= 8000) {
+										nextPosition = new Point(NA2[i].p.x, NA2[i].p.y);
+									find = 1;
+									break;}}
+								}
+							}
+							map3[NA2[i].p.x][NA2[i].p.y] = 0;
+							map3[temp2.p.x][temp2.p.y] = 0;
+							
+						}
+						if(find == 1) break;
+					}
+				}
+				if(find == 1) break;
+				
+			}
+			if(find == 0 ) {
+				System.out.print("띠이용~~~~~~~~~~~~~~~~~~~~~~~~~~");
+				int temp3 = 0;
+				int temp4 = 0;
+				Narr(NA, 16);
+				Narr(NA2, 16);
+				for(int i = 0; i < 16; i ++) {
+					System.out.print(" " + NA2[i].num);
+				}
+				temp3 = NA[0].num;
+				nextPosition = NA[0].p;
+				temp4 = NA2[0].num;
+				if(temp4 > temp3) {
+					nextPosition = NA2[0].p;
+				}
+				
+			}
+			
+		}
+		
+		
+		return nextPosition;
+	}
 }

@@ -29,19 +29,28 @@ public class PixelPlayer110 extends Player {
     opMaplD = lDiagonalSearch(map,myStone);//왼쪽위->오른쪽 아래 대각선 가중치 부여
     opMaprD = rDiagonalSearch(map,myStone);//오른쪽위->왼쪽 아래 대각선 가중치 부여
     opMap1 = merge(opMapX,opMapY,opMaplD,opMaprD);//4개 가중치 그래프 병합
+    
+    System.out.println("110_나가로");
+		print(opMapX);
+		System.out.println("110_나세로");
+		print(opMapY);  
 		
 		opMapX = horizonSearch(map,enemyStone);//가로 가중치 부여
     opMapY = verticalSearch(map,enemyStone);//세로 가중치 부여
     opMaplD = lDiagonalSearch(map,enemyStone);//왼쪽위->오른쪽 아래 대각선 가중치 부여
     opMaprD = rDiagonalSearch(map,enemyStone);//오른쪽위->왼쪽 아래 대각선 가중치 부여
 	  opMap2 = merge(opMapX,opMapY,opMaplD,opMaprD);//4개 가중치 그래프 병합
+	  System.out.println("110_상대가로");
+		print(opMapX);
+		System.out.println("110_상대세로");
+		print(opMapY);
 	  
 	  opMap = merge2(opMap1,opMap2);
 	  
-	  System.out.println("110_상대테이블");
-		print(opMap2);
-		System.out.println("110_통합테이블");
-		print(opMap);  
+//	  System.out.println("110_상대테이블");
+//		print(opMap2);
+//		System.out.println("110_통합테이블");
+//		print(opMap);  
 				
 				
     int maxX = -1;
@@ -109,6 +118,41 @@ public class PixelPlayer110 extends Player {
 	  return nextPosition;
 	}
 	
+	public boolean isPromising(int stone, int locX,int locY, int axis){
+	  int count = 0;
+	  
+	  if(axis == 0){
+    	for(int i = locX - 3; i <= locX + 3; i++ ) {
+    			if ( i < 0 || i >= PixelTester.SIZE_OF_BOARD ) {
+    				continue;
+    			}
+    			if ( map[i][locY] == stone || map[i][locY] == 0) {
+    				count++;
+    				if ( count == 4 ) {
+    					return true;
+    				}
+    			} else {
+    				count = 0;
+    			}
+    		}
+    	}
+      else{
+    		for(int i = locY - 3; i <= locY + 3; i++ ) {
+    			if ( i < 0 || i >= PixelTester.SIZE_OF_BOARD ) {
+    				continue;
+    			}
+    			if ( map[locX][i] == stone || map[locX][i] == 0 ) {
+    				count++;
+    				if ( count == 4 ) {
+    					return true;
+    				}
+    			} else {
+    				count = 0;
+    			}
+    		} 
+    	} 
+    	return false;
+	}
 	
 	public boolean isDanger(int x,int y){
 	  boolean danger = false;
@@ -184,7 +228,7 @@ public class PixelPlayer110 extends Player {
 	}
 	
 	//세로가중치
-	public static int[][] verticalSearch(int[][] omap,int myStone){
+	public  int[][] verticalSearch(int[][] omap,int myStone){
 	  int w = 100; //가중치
 		int cnt = 0; //붙어있는 돌의 수
 	  int[][] opMapY = new int[PixelTester.SIZE_OF_BOARD][PixelTester.SIZE_OF_BOARD];
@@ -198,7 +242,10 @@ public class PixelPlayer110 extends Player {
               if(omap[j+cnt][i] == myStone) //붙어있는 돌이 존재하면 카운트하고
                 ++cnt;
               else if(omap[j+cnt][i] == 0){ //돌을 둘수있는 위치이면 세로가중치 맵을 검사
-                opMapY[j+cnt][i] += (cnt * w);
+                if(isPromising(myStone,j+cnt,i,0))
+                  opMapY[j+cnt][i] += (cnt * w);
+                else
+                  opMapY[j+cnt][i] = 0;  
                 break;
               }
               else break; //돌을 둘 수 있는 자리가 아닌경우 종료
@@ -208,7 +255,10 @@ public class PixelPlayer110 extends Player {
           // 현재돌의 전 위치를 검사해서
           if(((j-1)!= -1)){ //맵의 크기를 벗어나지 않고
              if ((omap[j-1][i] == 0) ){ //돌을 둘 수 있는 위치이면
-              opMapY[j-1][i] += (cnt * w);  
+              if(isPromising(myStone,j-1,i,0))
+                opMapY[j-1][i] += (cnt * w);  
+              else
+                opMapY[j-1][i] = 0;  
             }
           }
           
@@ -222,7 +272,7 @@ public class PixelPlayer110 extends Player {
 	}
 	
 	//가로가중치
-	public static int[][] horizonSearch(int[][] omap,int myStone){
+	public  int[][] horizonSearch(int[][] omap,int myStone){
 	  int w = 100; //가중치
 		int cnt = 0; //붙어있는 돌의 수
 	  int[][] opMapX = new int[PixelTester.SIZE_OF_BOARD][PixelTester.SIZE_OF_BOARD];
@@ -238,7 +288,10 @@ public class PixelPlayer110 extends Player {
                 ++cnt;
               }
               else if(omap[i][j+cnt] == 0){ //돌을 둘수있는 위치이면 가로가중치 맵을 검사
-                opMapX[i][j+cnt] += (cnt * w);
+                if(isPromising(myStone,i,j+cnt,1))
+                  opMapX[i][j+cnt] += (cnt * w);
+                else
+                   opMapX[i][j+cnt] = 0;
                 break;
               }
               else break; //돌을 둘 수 있는 자리가 아닌경우 종료
@@ -247,8 +300,11 @@ public class PixelPlayer110 extends Player {
           
           // 현재돌의 전 위치를 검사해서
           if(((j-1)!= -1)){ //맵의 크기를 벗어나지 않고
-             if ((omap[i][j-1] == 0) ){ //돌을 둘 수 있는 위치이면
-              opMapX[i][j-1] += (cnt * w);  
+            if ((omap[i][j-1] == 0) ){ //돌을 둘 수 있는 위치이면
+              if(isPromising(myStone,i,j-1,1))
+                opMapX[i][j-1] += (cnt * w);  
+              else
+                opMapX[i][j-1] = 0;  
             }
           }
           
