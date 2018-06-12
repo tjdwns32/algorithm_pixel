@@ -39,17 +39,17 @@ public class PixelPlayer110 extends Player {
     opMapX = horizonSearch(map,myStone);//가로 가중치 부여
     opMapY = verticalSearch(map,myStone);//세로 가중치 부여
     opMaplD = lDiagonalSearch(map,myStone);//왼쪽위->오른쪽 아래 대각선 가중치 부여
-    System.out.println("110_왼쪽위_나");
-		print(opMaplD);
     opMaprD = rDiagonalSearch(map,myStone);//오른쪽위->왼쪽 아래 대각선 가중치 부여
-    System.out.println("110_오른쪽위_나");
-		print(opMaprD);
     opMap1 = merge(opMapX,opMapY,opMaplD,opMaprD);//4개 가중치 그래프 병합
 		
 		opMapX = horizonSearch(map,enemyStone);//가로 가중치 부여
     opMapY = verticalSearch(map,enemyStone);//세로 가중치 부여
     opMaplD = lDiagonalSearch(map,enemyStone);//왼쪽위->오른쪽 아래 대각선 가중치 부여
+    System.out.println("110_왼쪽위_상대");
+		print(opMaplD);
     opMaprD = rDiagonalSearch(map,enemyStone);//오른쪽위->왼쪽 아래 대각선 가중치 부여
+    System.out.println("110_오른쪽위_상대");
+		print(opMaprD);
 	  opMap2 = merge(opMapX,opMapY,opMaplD,opMaprD);//4개 가중치 그래프 병합
 	  
 	  opMap = merge2(opMap1,opMap2);
