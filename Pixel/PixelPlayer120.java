@@ -28,7 +28,7 @@ public class PixelPlayer120 extends Player {
 		int cx = (int)currentPosition.getX(), cy = (int)currentPosition.getY();
 		Point nextPosition = new Point();
 		
-		//if(myStone == 1 && map[2][3] == 0) return new Point(2,3);
+		if(myStone == 1 && map[2][3] == 0) return new Point(2,3);
 		
 		int [][] opMapX = new int[8][8]; 
     int [][] opMapY = new int[8][8];
